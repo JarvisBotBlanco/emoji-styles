@@ -1,7 +1,7 @@
 FROM node:20-alpine AS builder
-RUN corepack enable
+RUN corepack enable && corepack prepare pnpm@8.15.9 --activate
 WORKDIR /app
-COPY pnpm-lock.yaml pnpm-workspace.yaml package.json ./
+COPY pnpm-lock.yaml pnpm-workspace.yaml package.json tsconfig.base.json ./
 COPY packages/core/package.json packages/core/
 COPY packages/react/package.json packages/react/
 COPY demo/package.json demo/

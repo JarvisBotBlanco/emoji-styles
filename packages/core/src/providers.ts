@@ -37,6 +37,18 @@ export const providers: Record<EmojiStyle, ProviderConfig> = {
     extension: "png",
     label: "Twitter/X",
   },
+  "animated-noto": {
+    name: "animated-noto",
+    baseUrl: "https://em-content.zobj.net/source/animated-noto-color-emoji/461",
+    extension: "gif",
+    label: "Animated Noto",
+  },
+  "animated-fluent": {
+    name: "animated-fluent",
+    baseUrl: "https://em-content.zobj.net/source/microsoft-teams/400",
+    extension: "png",
+    label: "Animated Fluent",
+  },
 };
 
 export const SIZE_MAP: Record<string, string> = {

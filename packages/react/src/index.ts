@@ -1,4 +1,5 @@
 export { Emoji, type EmojiComponentProps } from "./Emoji";
+export { EmojiGrid, type EmojiGridProps } from "./EmojiGrid";
 export { EmojiProvider, type EmojiProviderProps, useEmojiContext } from "./EmojiProvider";
 export { useEmoji } from "./useEmoji";
 export type { EmojiStyle, EmojiSize, EmojiData } from "emoji-styles";

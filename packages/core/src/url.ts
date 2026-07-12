@@ -31,7 +31,7 @@ export function getFallbackChain(emoji: string, style: EmojiStyle): string[] {
 
   const chain: string[] = [primary];
 
-  if (style === "animated") {
+  if (style === "animated" || style === "animated-noto" || style === "animated-fluent") {
     const staticFallbacks: EmojiStyle[] = ["microsoft-teams", "apple", "google"];
     for (const fb of staticFallbacks) {
       const url = getEmojiUrl(emoji, fb);

@@ -14,7 +14,7 @@
   },
   "files": ["dist"],
   "scripts": {
-    "build": "tsup src/index.ts --format esm --dts --clean --external react",
+    "build": "tsup src/index.ts --format esm --dts --clean --external react --external emoji-styles",
     "dev": "tsup src/index.ts --format esm --dts --watch --external react"
   },
   "dependencies": {

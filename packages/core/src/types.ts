@@ -4,7 +4,9 @@ export type EmojiStyle =
   | "google"
   | "samsung"
   | "animated"
-  | "twemoji";
+  | "twemoji"
+  | "animated-noto"
+  | "animated-fluent";
 
 export type EmojiSize = "xs" | "sm" | "md" | "lg" | "xl" | "2xl" | "3xl" | number;
 
