@@ -1,0 +1,10 @@
+{
+  "twemoji": {
+    "version": "15.1.0",
+    "baseUrl": "https://cdn.jsdelivr.net/gh/jdecked/twemoji@15.1.0/assets/72x72",
+    "extension": "png",
+    "license": "CC-BY-4.0",
+    "source": "https://github.com/jdecked/twemoji",
+    "licenseUrl": "https://github.com/jdecked/twemoji/blob/v15.1.0/LICENSE-GRAPHICS"
+  }
+}
