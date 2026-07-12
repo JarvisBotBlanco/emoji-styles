@@ -43,6 +43,13 @@ export function Emoji({ emoji, style: styleProp, size = "md", className = "", al
   const url = useMemo(() => getEmojiUrl(emoji, style), [emoji, style]);
   const fallbackChain = useMemo(() => getFallbackChain(emoji, style), [emoji, style]);
 
+  // Reset loaded state when url changes (style switch)
+  useEffect(() => {
+    setIsLoaded(false);
+    setFailed(false);
+    fallbackIndex.current = 0;
+  }, [url]);
+
   // Set up IntersectionObserver for lazy loading
   useEffect(() => {
     if (!lazy || isVisible) return;

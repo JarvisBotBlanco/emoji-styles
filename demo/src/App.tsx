@@ -47,7 +47,16 @@ function LazyEmojiCell({
   const containerRef = useRef<HTMLDivElement>(null);
   const [visible, setVisible] = useState(false);
   const [loaded, setLoaded] = useState(false);
+  const prevStyleRef = useRef(emojiStyle);
   const data = getEmojiData(emoji);
+
+  // Reset loaded state when style changes so fade-in plays again
+  useEffect(() => {
+    if (prevStyleRef.current !== emojiStyle) {
+      prevStyleRef.current = emojiStyle;
+      setLoaded(false);
+    }
+  }, [emojiStyle]);
 
   useEffect(() => {
     const el = containerRef.current;
@@ -70,20 +79,23 @@ function LazyEmojiCell({
     if (!visible || loaded) return;
     const el = containerRef.current;
     if (!el) return;
-    const img = el.querySelector("img");
-    if (!img) {
-      // No img yet or native emoji fallback — mark loaded after paint
-      const raf = requestAnimationFrame(() => setLoaded(true));
-      return () => cancelAnimationFrame(raf);
-    }
-    if (img.complete) {
-      setLoaded(true);
-      return;
-    }
-    const handleLoad = () => setLoaded(true);
-    img.addEventListener("load", handleLoad);
-    return () => img.removeEventListener("load", handleLoad);
-  }, [visible, loaded]);
+    // Small delay to let the DOM paint the new image
+    const timeout = setTimeout(() => {
+      const img = el.querySelector("img");
+      if (!img) {
+        setLoaded(true);
+        return;
+      }
+      if (img.complete) {
+        setLoaded(true);
+        return;
+      }
+      const handleLoad = () => setLoaded(true);
+      img.addEventListener("load", handleLoad);
+      return () => img.removeEventListener("load", handleLoad);
+    }, 50);
+    return () => clearTimeout(timeout);
+  }, [visible, loaded, emojiStyle]);
 
   return (
     <div
@@ -92,6 +104,7 @@ function LazyEmojiCell({
       title={data?.alt ?? emoji}
     >
       {!visible && <div className="skeleton" />}
+      {visible && !loaded && <div className="skeleton" />}
       {visible && (
         <div className={`emoji-cell-inner ${loaded ? "fade-in" : ""}`}>
           <Emoji emoji={emoji} size={size} style={emojiStyle} lazy />

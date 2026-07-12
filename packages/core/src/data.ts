@@ -733,6 +733,8 @@ export const emojiData: Record<string, EmojiData> = {
   "💅": { name: "nail-polish_1f485", alt: "Nail polish", codepoint: "1f485" },
   "💏": { name: "kiss_1f48f", alt: "Kiss", codepoint: "1f48f" },
   "💑": { name: "couple-with-heart_1f491", alt: "Couple with heart", codepoint: "1f491" },
+  "❤️": { name: "red-heart_2764-fe0f", alt: "Red heart", codepoint: "2764-fe0f" },
+  "❤": { name: "red-heart_2764", alt: "Red heart", codepoint: "2764" },
   "💪": { name: "flexed-biceps_1f4aa", alt: "Flexed biceps", codepoint: "1f4aa" },
   "🕺": { name: "man-dancing_1f57a", alt: "Man dancing", codepoint: "1f57a" },
   "🖕": { name: "middle-finger_1f595", alt: "Reversed hand with middle finger extended", codepoint: "1f595" },

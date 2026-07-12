@@ -31,11 +31,17 @@ export function getFallbackChain(emoji: string, style: EmojiStyle): string[] {
 
   const chain: string[] = [primary];
 
+  // Always add twemoji as a reliable fallback (CDN never returns 403)
+  if (style !== "twemoji") {
+    const twemojiUrl = getEmojiUrl(emoji, "twemoji");
+    if (twemojiUrl && twemojiUrl !== primary) chain.push(twemojiUrl);
+  }
+
   if (style === "animated" || style === "animated-noto" || style === "animated-fluent") {
     const staticFallbacks: EmojiStyle[] = ["microsoft-teams", "apple", "google"];
     for (const fb of staticFallbacks) {
       const url = getEmojiUrl(emoji, fb);
-      if (url && url !== primary) chain.push(url);
+      if (url && url !== primary && !chain.includes(url)) chain.push(url);
     }
   }
 
