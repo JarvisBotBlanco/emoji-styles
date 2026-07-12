@@ -1,0 +1,101 @@
+import { createHash } from "node:crypto";
+import { mkdir, readFile, writeFile } from "node:fs/promises";
+import { dirname, resolve } from "node:path";
+import { fileURLToPath } from "node:url";
+import { emojiData } from "../packages/core/src/data";
+
+interface ProviderConfig {
+  version: string;
+  baseUrl: string;
+  extension: string;
+  license: string;
+  source: string;
+  licenseUrl: string;
+}
+
+interface AssetRecord {
+  codepoint: string;
+  file: string;
+  sha256: string;
+  bytes: number;
+}
+
+const scriptDirectory = dirname(fileURLToPath(import.meta.url));
+const repositoryRoot = resolve(scriptDirectory, "..");
+const dryRun = process.argv.includes("--dry-run");
+const providerName = "twemoji";
+const configPath = resolve(repositoryRoot, "assets/providers.json");
+const configs = JSON.parse(await readFile(configPath, "utf8")) as Record<string, ProviderConfig>;
+const config = configs[providerName];
+
+if (!config) throw new Error(`Missing ${providerName} configuration in assets/providers.json`);
+if (!/^https:\/\//.test(config.baseUrl)) throw new Error("Asset baseUrl must use HTTPS");
+if (!config.version || !config.license || !config.licenseUrl) {
+  throw new Error("Provider version and license metadata are required");
+}
+
+const codepoints = [...new Set(
+  Object.values(emojiData).map((data) => data.codepoint.replace(/-fe0f/gi, "")),
+)].sort();
+
+console.log(`${providerName}@${config.version}: ${codepoints.length} catalog assets`);
+
+if (dryRun) {
+  console.log("Configuration is valid; no files were downloaded.");
+  process.exit(0);
+}
+
+const outputDirectory = resolve(repositoryRoot, "assets", providerName);
+await mkdir(outputDirectory, { recursive: true });
+
+async function download(codepoint: string): Promise<AssetRecord> {
+  const file = `${codepoint}.${config.extension}`;
+  const response = await fetch(`${config.baseUrl}/${file}`);
+  if (!response.ok) throw new Error(`${file}: HTTP ${response.status}`);
+
+  const bytes = Buffer.from(await response.arrayBuffer());
+  await writeFile(resolve(outputDirectory, file), bytes);
+  return {
+    codepoint,
+    file,
+    sha256: createHash("sha256").update(bytes).digest("hex"),
+    bytes: bytes.length,
+  };
+}
+
+const records: AssetRecord[] = [];
+const failures: string[] = [];
+const concurrency = 8;
+
+for (let offset = 0; offset < codepoints.length; offset += concurrency) {
+  const batch = codepoints.slice(offset, offset + concurrency);
+  const results = await Promise.allSettled(batch.map(download));
+  results.forEach((result, index) => {
+    if (result.status === "fulfilled") records.push(result.value);
+    else failures.push(`${batch[index]}: ${String(result.reason)}`);
+  });
+  console.log(`${Math.min(offset + concurrency, codepoints.length)}/${codepoints.length}`);
+}
+
+const manifest = {
+  provider: providerName,
+  version: config.version,
+  source: config.source,
+  license: config.license,
+  licenseUrl: config.licenseUrl,
+  generatedAt: new Date().toISOString(),
+  assets: records.sort((a, b) => a.codepoint.localeCompare(b.codepoint)),
+  failures,
+};
+
+await writeFile(
+  resolve(outputDirectory, "manifest.json"),
+  `${JSON.stringify(manifest, null, 2)}\n`,
+  "utf8",
+);
+
+if (failures.length > 0) {
+  throw new Error(`Asset sync completed with ${failures.length} missing files`);
+}
+
+console.log(`Wrote ${records.length} verified assets to ${outputDirectory}`);

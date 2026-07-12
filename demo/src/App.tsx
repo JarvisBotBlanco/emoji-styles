@@ -30,6 +30,7 @@ const SIZES: SizeOption[] = [
 ];
 
 const SAMPLE_EMOJIS = ["😀", "🎉", "🚀", "❤️", "🔥", "🌈"];
+const EMOJI_BATCH_SIZE = 180;
 
 // ─── Lazy Emoji Cell ───
 
@@ -154,7 +155,18 @@ export default function App() {
   const [style, setStyle] = useState<EmojiStyle>("microsoft-teams");
   const [size, setSize] = useState<SizeOption>(SIZES[4]); // xl
   const [search, setSearch] = useState("");
-  const [theme, setTheme] = useState<"light" | "dark">("dark");
+  const [visibleCount, setVisibleCount] = useState(EMOJI_BATCH_SIZE);
+  const [theme, setTheme] = useState<"light" | "dark">(() => {
+    const savedTheme = window.localStorage.getItem("emoji-styles-theme");
+    if (savedTheme === "light" || savedTheme === "dark") return savedTheme;
+    return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+  });
+
+  useEffect(() => {
+    document.documentElement.dataset.theme = theme;
+    document.documentElement.style.colorScheme = theme;
+    window.localStorage.setItem("emoji-styles-theme", theme);
+  }, [theme]);
 
   const allEmojis = useMemo(() => getAvailableEmojis(), []);
 
@@ -171,13 +183,22 @@ export default function App() {
     });
   }, [allEmojis, search]);
 
+  const visibleEmojis = useMemo(
+    () => filteredEmojis.slice(0, visibleCount),
+    [filteredEmojis, visibleCount],
+  );
+
+  useEffect(() => {
+    setVisibleCount(EMOJI_BATCH_SIZE);
+  }, [search]);
+
   const toggleTheme = useCallback(() => {
     setTheme((prev) => (prev === "dark" ? "light" : "dark"));
   }, []);
 
   return (
     <EmojiProvider defaultStyle={style}>
-      <div className="app" data-theme={theme}>
+      <div className="app">
         {/* Floating Navbar */}
         <nav className="navbar">
           <div className="nav-brand">
@@ -187,7 +208,9 @@ export default function App() {
             <button
               className="theme-toggle-btn"
               onClick={toggleTheme}
-              aria-label="Toggle theme"
+              aria-label={`Switch to ${theme === "dark" ? "light" : "dark"} theme`}
+              aria-pressed={theme === "dark"}
+              title={`Switch to ${theme === "dark" ? "light" : "dark"} theme`}
             >
               {theme === "dark" ? <SunIcon /> : <MoonIcon />}
             </button>
@@ -196,11 +219,11 @@ export default function App() {
 
         {/* Hero Section */}
         <header className="hero">
-          <div className="eyebrow">Open Source Emoji Library</div>
+          <div className="eyebrow">Private provider laboratory</div>
           <h1 className="hero-title">Emoji Styles</h1>
           <p className="hero-subtitle">
-            Browse emojis in 8 different styles with smooth fallback chains.
-            Choose your preferred look and size.
+            Inspect 893 mapped emojis across six provider styles, compare
+            rendering, and validate fallback behavior before public release.
           </p>
           <div className="stats-row">
             <div className="stat-pill">
@@ -212,8 +235,8 @@ export default function App() {
               <span className="stat-label">Styles</span>
             </div>
             <div className="stat-pill">
-              <span className="stat-number">{filteredEmojis.length}</span>
-              <span className="stat-label">Showing</span>
+              <span className="stat-number">{visibleEmojis.length}</span>
+              <span className="stat-label">Rendered</span>
             </div>
           </div>
         </header>
@@ -229,6 +252,7 @@ export default function App() {
                   key={s.key}
                   className={`pill ${style === s.key ? "active" : ""}`}
                   onClick={() => setStyle(s.key)}
+                  aria-pressed={style === s.key}
                 >
                   {s.emoji && <span className="pill-emoji">{s.emoji}</span>}
                   {s.label}
@@ -248,6 +272,7 @@ export default function App() {
                     key={s.label}
                     className={`pill size-pill ${size.label === s.label ? "active" : ""}`}
                     onClick={() => setSize(s)}
+                    aria-pressed={size.label === s.label}
                   >
                     {s.label}
                   </button>
@@ -309,16 +334,37 @@ export default function App() {
           <h2 className="section-title">
             All Emojis — {STYLES.find((s) => s.key === style)?.label}
           </h2>
-          <div className="emoji-grid">
-            {filteredEmojis.map((emoji) => (
-              <LazyEmojiCell
-                key={emoji}
-                emoji={emoji}
-                size={size.px}
-                emojiStyle={style}
-              />
-            ))}
-          </div>
+          {filteredEmojis.length > 0 ? (
+            <div className="emoji-grid">
+              {visibleEmojis.map((emoji) => (
+                <LazyEmojiCell
+                  key={emoji}
+                  emoji={emoji}
+                  size={size.px}
+                  emojiStyle={style}
+                />
+              ))}
+            </div>
+          ) : (
+            <div className="empty-state" role="status">
+              <span className="empty-state-title">No matching emojis</span>
+              <span className="empty-state-copy">
+                Try a Unicode character or a broader English name.
+              </span>
+            </div>
+          )}
+          {visibleEmojis.length < filteredEmojis.length && (
+            <div className="load-more-row">
+              <button
+                className="load-more-button"
+                type="button"
+                onClick={() => setVisibleCount((count) => count + EMOJI_BATCH_SIZE)}
+              >
+                Load {Math.min(EMOJI_BATCH_SIZE, filteredEmojis.length - visibleEmojis.length)} more
+                <span>{visibleEmojis.length} of {filteredEmojis.length}</span>
+              </button>
+            </div>
+          )}
         </section>
 
         {/* Footer */}

@@ -3,9 +3,11 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "generate": "tsx scripts/generate-emoji-data.ts",
-    "generate:validate": "tsx scripts/generate-emoji-data.ts --validate",
-    "generate:all": "tsx scripts/generate-emoji-data.ts --all --validate"
+    "generate": "tsx generate-emoji-data.ts",
+    "generate:validate": "tsx generate-emoji-data.ts --validate",
+    "generate:all": "tsx generate-emoji-data.ts --all --validate",
+    "assets:check": "tsx sync-open-assets.ts --dry-run",
+    "assets:sync": "tsx sync-open-assets.ts"
   },
   "devDependencies": {
     "tsx": "^4.19.0"

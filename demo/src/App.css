@@ -5,7 +5,8 @@
 
 /* ─── CSS Variables & Theme ─── */
 
-:root {
+:root,
+:root[data-theme="dark"] {
   /* Dark theme (default) */
   --bg: #0a0a0a;
   --bg-secondary: #111111;
@@ -16,9 +17,10 @@
   --text-dim: #555555;
   --border: #222222;
   --border-subtle: #1a1a1a;
-  --primary: #6366f1;
-  --primary-hover: #818cf8;
-  --primary-muted: rgba(99, 102, 241, 0.15);
+  --primary: #5eead4;
+  --primary-strong: #0f766e;
+  --primary-hover: #99f6e4;
+  --primary-muted: rgba(45, 212, 191, 0.12);
   --radius: 16px;
   --radius-sm: 10px;
   --radius-full: 9999px;
@@ -30,38 +32,20 @@
   --transition-theme: 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-[data-theme="dark"] {
-  --bg: #0a0a0a;
-  --bg-secondary: #111111;
-  --surface: #161616;
-  --surface-hover: #1e1e1e;
-  --text: #ededed;
-  --text-muted: #888888;
-  --text-dim: #555555;
-  --border: #222222;
-  --border-subtle: #1a1a1a;
-  --primary: #6366f1;
-  --primary-hover: #818cf8;
-  --primary-muted: rgba(99, 102, 241, 0.15);
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
-  --shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
-  --shadow-lg: 0 12px 40px rgba(0, 0, 0, 0.5);
-  --shadow-hover: 0 8px 30px rgba(0, 0, 0, 0.4);
-}
-
-[data-theme="light"] {
-  --bg: #fafafa;
-  --bg-secondary: #f4f4f5;
+:root[data-theme="light"] {
+  --bg: #f7f8f6;
+  --bg-secondary: #eef1ed;
   --surface: #ffffff;
-  --surface-hover: #f0f0f0;
-  --text: #18181b;
-  --text-muted: #71717a;
-  --text-dim: #a1a1aa;
-  --border: #e4e4e7;
-  --border-subtle: #efefef;
-  --primary: #6366f1;
-  --primary-hover: #4f46e5;
-  --primary-muted: rgba(99, 102, 241, 0.08);
+  --surface-hover: #f2f5f1;
+  --text: #18201e;
+  --text-muted: #5f6b67;
+  --text-dim: #8b9692;
+  --border: #dce2de;
+  --border-subtle: #e8ece9;
+  --primary: #0f766e;
+  --primary-strong: #115e59;
+  --primary-hover: #115e59;
+  --primary-muted: rgba(15, 118, 110, 0.09);
   --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.06);
   --shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
   --shadow-lg: 0 12px 40px rgba(0, 0, 0, 0.1);
@@ -79,7 +63,7 @@
 }
 
 body {
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+  font-family: "Segoe UI Variable", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
     "Helvetica Neue", Arial, sans-serif;
   background: var(--bg);
   color: var(--text);
@@ -88,6 +72,17 @@ body {
   -moz-osx-font-smoothing: grayscale;
   transition: background-color var(--transition-theme),
     color var(--transition-theme);
+}
+
+button,
+input {
+  font: inherit;
+}
+
+button:focus-visible,
+input:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 3px;
 }
 
 /* ─── App Container ─── */
@@ -171,7 +166,7 @@ body {
 
 /* ─── Eyebrow Tag ─── */
 
-.eyrow {
+.eyebrow {
   display: inline-block;
   font-size: 11px;
   font-weight: 600;
@@ -189,7 +184,7 @@ body {
 .hero {
   padding-top: 100px;
   padding-bottom: 3rem;
-  text-align: center;
+  text-align: left;
 }
 
 .hero-title {
@@ -198,17 +193,14 @@ body {
   letter-spacing: -0.03em;
   line-height: 1.1;
   margin-bottom: 16px;
-  background: linear-gradient(135deg, var(--text) 0%, var(--text-muted) 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  color: var(--text);
 }
 
 .hero-subtitle {
   font-size: 1.1rem;
   color: var(--text-muted);
-  max-width: 480px;
-  margin: 0 auto 2rem;
+  max-width: 620px;
+  margin: 0 0 2rem;
   line-height: 1.6;
 }
 
@@ -216,7 +208,7 @@ body {
 
 .stats-row {
   display: flex;
-  justify-content: center;
+  justify-content: flex-start;
   gap: 12px;
   flex-wrap: wrap;
 }
@@ -240,6 +232,7 @@ body {
   font-size: 1.1rem;
   font-weight: 700;
   color: var(--primary);
+  font-variant-numeric: tabular-nums;
 }
 
 .stat-label {
@@ -318,14 +311,18 @@ body {
 
 .pill.active {
   color: #ffffff;
-  background: var(--primary);
-  border-color: var(--primary);
-  box-shadow: 0 2px 8px rgba(99, 102, 241, 0.3);
+  background: var(--primary-strong);
+  border-color: var(--primary-strong);
+  box-shadow: var(--shadow-sm);
 }
 
 .pill.active:hover {
   background: var(--primary-hover);
   border-color: var(--primary-hover);
+}
+
+:root[data-theme="dark"] .pill.active:hover {
+  color: #0f2f2b;
 }
 
 .pill-emoji {
@@ -453,6 +450,69 @@ body {
   gap: 12px;
 }
 
+.empty-state {
+  display: grid;
+  place-items: center;
+  gap: 6px;
+  min-height: 220px;
+  padding: 32px;
+  text-align: center;
+  background: var(--surface);
+  border: 1px dashed var(--border);
+  border-radius: var(--radius);
+}
+
+.empty-state-title {
+  color: var(--text);
+  font-size: 15px;
+  font-weight: 650;
+}
+
+.empty-state-copy {
+  color: var(--text-muted);
+  font-size: 13px;
+}
+
+.load-more-row {
+  display: flex;
+  justify-content: center;
+  padding-top: 24px;
+}
+
+.load-more-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px 10px 18px;
+  color: #ffffff;
+  background: var(--primary-strong);
+  border: 1px solid var(--primary-strong);
+  border-radius: var(--radius-full);
+  cursor: pointer;
+  transition: transform var(--transition), background-color var(--transition);
+}
+
+.load-more-button span {
+  padding: 3px 8px;
+  color: rgba(255, 255, 255, 0.76);
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: var(--radius-full);
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+}
+
+.load-more-button:hover {
+  background: var(--primary-hover);
+}
+
+.load-more-button:active {
+  transform: scale(0.98);
+}
+
+:root[data-theme="dark"] .load-more-button:hover {
+  color: #0f2f2b;
+}
+
 .emoji-cell {
   position: relative;
   display: flex;
@@ -476,7 +536,7 @@ body {
 .emoji-cell:hover {
   transform: scale(1.05);
   border-color: var(--primary);
-  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.25), 0 0 0 1px var(--primary);
+  box-shadow: var(--shadow-hover);
   z-index: 1;
 }
 

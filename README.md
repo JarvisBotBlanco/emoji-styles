@@ -148,6 +148,7 @@ pnpm install
 pnpm typecheck
 pnpm test
 pnpm build
+pnpm assets:check
 pnpm dev
 ```
 
@@ -155,7 +156,7 @@ The workspace contains `packages/core`, `packages/react`, and a Vite app in `dem
 
 ## Project status
 
-The broad catalog is intentionally private. Before a reduced public release, the project still needs locally hosted open assets, automated React component tests, CI, provenance, and verification of every third-party notice.
+The broad catalog is intentionally private. React behavior and the asset configuration are validated in CI. Before a reduced public release, the project still needs a reviewed local asset snapshot, package separation, provenance, and final verification of every third-party notice.
 
 ## Contributing
 
