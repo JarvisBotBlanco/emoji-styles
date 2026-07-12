@@ -7,9 +7,17 @@
     "generate:validate": "tsx generate-emoji-data.ts --validate",
     "generate:all": "tsx generate-emoji-data.ts --all --validate",
     "assets:check": "tsx sync-open-assets.ts --dry-run",
-    "assets:sync": "tsx sync-open-assets.ts"
+    "assets:sync": "tsx sync-open-assets.ts",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit"
   },
   "devDependencies": {
-    "tsx": "^4.19.0"
+    "@types/node": "22.15.0",
+    "tsx": "^4.19.0",
+    "typescript": "5.9.3",
+    "vitest": "2.1.9"
+  },
+  "dependencies": {
+    "sharp": "0.34.3"
   }
 }

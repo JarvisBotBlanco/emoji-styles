@@ -9,6 +9,13 @@ pnpm assets:check
 pnpm assets:sync
 ```
 
-`assets:check` validates configuration without downloading files. `assets:sync` downloads only codepoints present in the core catalog and writes `assets/twemoji/manifest.json` with SHA-256 checksums.
+`assets:check` validates configuration without downloading files. `assets:sync` downloads only codepoints present in the core catalog, applies strictly lossless optimization, and writes `assets/twemoji/manifest.json` with SHA-256 checksums and format metadata.
+
+Optimization is conservative:
+
+- static PNG files are recompressed losslessly;
+- animated GIF and WebP candidates retain frame count, delays, and loop metadata;
+- APNG files are detected from their `acTL` chunk and preserved byte-for-byte;
+- candidates are rejected when animation metadata changes or output size does not improve.
 
 Do not place Apple, Samsung, or other proprietary artwork here without written redistribution permission and an update to `LICENSE_POLICY.md`.

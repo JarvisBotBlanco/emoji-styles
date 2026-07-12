@@ -3,6 +3,7 @@ import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { emojiData } from "../packages/core/src/data";
+import { optimizeImage, type ImageFormat } from "./image-optimizer";
 
 interface ProviderConfig {
   version: string;
@@ -18,6 +19,15 @@ interface AssetRecord {
   file: string;
   sha256: string;
   bytes: number;
+  sourceFormat: ImageFormat;
+  outputFormat: ImageFormat;
+  animated: boolean;
+  frames: number;
+  loop?: number;
+  delays?: number[];
+  sourceBytes: number;
+  optimized: boolean;
+  reason: string;
 }
 
 const scriptDirectory = dirname(fileURLToPath(import.meta.url));
@@ -49,17 +59,28 @@ const outputDirectory = resolve(repositoryRoot, "assets", providerName);
 await mkdir(outputDirectory, { recursive: true });
 
 async function download(codepoint: string): Promise<AssetRecord> {
-  const file = `${codepoint}.${config.extension}`;
-  const response = await fetch(`${config.baseUrl}/${file}`);
-  if (!response.ok) throw new Error(`${file}: HTTP ${response.status}`);
+  const sourceFile = `${codepoint}.${config.extension}`;
+  const response = await fetch(`${config.baseUrl}/${sourceFile}`);
+  if (!response.ok) throw new Error(`${sourceFile}: HTTP ${response.status}`);
 
-  const bytes = Buffer.from(await response.arrayBuffer());
-  await writeFile(resolve(outputDirectory, file), bytes);
+  const source = Buffer.from(await response.arrayBuffer());
+  const optimized = await optimizeImage(source);
+  const file = `${codepoint}.${optimized.outputFormat}`;
+  await writeFile(resolve(outputDirectory, file), optimized.data);
   return {
     codepoint,
     file,
-    sha256: createHash("sha256").update(bytes).digest("hex"),
-    bytes: bytes.length,
+    sha256: createHash("sha256").update(optimized.data).digest("hex"),
+    bytes: optimized.outputBytes,
+    sourceFormat: optimized.sourceFormat,
+    outputFormat: optimized.outputFormat,
+    animated: optimized.animated,
+    frames: optimized.frames,
+    loop: optimized.loop,
+    delays: optimized.delays,
+    sourceBytes: optimized.sourceBytes,
+    optimized: optimized.optimized,
+    reason: optimized.reason,
   };
 }
 
