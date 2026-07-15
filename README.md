@@ -9,7 +9,7 @@
 A typed, multi-provider emoji toolkit for React with smart fallbacks, lazy loading, and a framework-agnostic core.
 
 [![License: MIT](https://img.shields.io/badge/license-MIT-22c55e.svg)](./LICENSE)
-[![CI](https://github.com/JarvisBotBlanco/emoji-styles/actions/workflows/ci.yml/badge.svg)](https://github.com/JarvisBotBlanco/emoji-styles/actions/workflows/ci.yml)
+[![CI](https://github.com/Blancochuy/emoji-styles/actions/workflows/ci.yml/badge.svg)](https://github.com/Blancochuy/emoji-styles/actions/workflows/ci.yml)
 [![TypeScript](https://img.shields.io/badge/TypeScript-strict-3178c6?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 
 [Quick start](#quick-start) · [Features](#features) · [Providers](#providers) · [AI agents](#why-ai-agents-benefit) · [API](#api-reference) · [Development](#development)
@@ -22,7 +22,7 @@ A typed, multi-provider emoji toolkit for React with smart fallbacks, lazy loadi
 
 Emoji Styles separates emoji meaning from emoji artwork. Your UI keeps ordinary Unicode characters while the renderer decides how they should look. Switch providers without rewriting product copy, preserve accessible fallback text, and share the same URL-resolution core across React, Vue, Svelte, Angular, or vanilla JavaScript.
 
-Every built-in image provider uses artwork with documented redistribution terms and an immutable upstream version. Native mode renders the actual Unicode glyph from the current operating system; it never substitutes a CDN image. See [LICENSE_POLICY.md](./LICENSE_POLICY.md).
+Every built-in image provider uses artwork with documented redistribution terms and an immutable upstream version. Native mode renders the actual Unicode glyph from the current operating system; it never substitutes a CDN image. See the [asset licensing policy](./docs/LICENSE_POLICY.md).
 
 ## Features
 
@@ -366,7 +366,7 @@ The workspace contains:
 
 Source code is available under the [MIT License](./LICENSE).
 
-Emoji artwork is provided by external services and may have separate licenses or usage terms. See [LICENSE_POLICY.md](./LICENSE_POLICY.md) and [THIRD_PARTY_NOTICES.md](./THIRD_PARTY_NOTICES.md).
+Emoji artwork is provided by external services and may have separate licenses or usage terms. See the [asset licensing policy](./docs/LICENSE_POLICY.md) and [third-party notices](./docs/THIRD_PARTY_NOTICES.md).
 
 ## Contributing
 
