@@ -14,6 +14,7 @@ export interface UseEmojiTokenOptions {
   theme?: EmojiTheme;
   provider?: EmojiThemeProviderRef;
   fallbacks?: readonly EmojiThemeProviderRef[];
+  nativeFallback?: boolean;
   locale?: string;
   providers?: Readonly<Record<string, EmojiAssetProvider>>;
 }
@@ -34,6 +35,7 @@ export function useEmojiToken(
   const locale = options.locale ?? context.locale;
   const provider = options.provider;
   const fallbacks = options.fallbacks;
+  const nativeFallback = options.nativeFallback ?? context.nativeFallback;
   const providers = options.providers ?? context.providers;
   const definition = useMemo(
     () => theme ? getEmojiTokenDefinition(theme, token) : null,
@@ -56,7 +58,7 @@ export function useEmojiToken(
       return () => { active = false; };
     }
     setState({ result: null, loading: true, error: null });
-    resolveEmojiToken(token, theme, { provider, fallbacks, locale, providers })
+    resolveEmojiToken(token, theme, { provider, fallbacks, nativeFallback, locale, providers })
       .then((result) => {
         if (active) setState({ result, loading: false, error: null });
       })
@@ -68,7 +70,7 @@ export function useEmojiToken(
         });
       });
     return () => { active = false; };
-  }, [theme, definition, token, provider, fallbacks, locale, providers]);
+  }, [theme, definition, token, provider, fallbacks, nativeFallback, locale, providers]);
 
   return { definition, ...state };
 }

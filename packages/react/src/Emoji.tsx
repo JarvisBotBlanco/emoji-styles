@@ -14,7 +14,7 @@ import {
 } from "emoji-styles";
 import { useEmojiContext } from "./EmojiProvider";
 
-const DEFAULT_FALLBACKS = [publicProviders.twemoji, publicProviders.native] as const;
+const DEFAULT_FALLBACKS = [publicProviders.twemoji] as const;
 
 export interface EmojiFallbackEvent {
   emoji: string;
@@ -36,6 +36,8 @@ export interface EmojiComponentProps {
   style?: EmojiStyle;
   provider?: EmojiProviderRef;
   fallbacks?: readonly EmojiProviderRef[];
+  /** Append native OS emoji after the configured provider chain. Defaults to true. */
+  nativeFallback?: boolean;
   size?: EmojiSize;
   className?: string;
   /** Accessible label. Defaults to the CLDR label from the bundled dataset. */
@@ -46,6 +48,7 @@ export interface EmojiComponentProps {
   loading?: "lazy" | "eager";
   /** @deprecated Use loading="lazy" or loading="eager". */
   lazy?: boolean;
+  /** @deprecated Use nativeFallback. */
   fallback?: boolean;
   onResolve?: (resolution: EmojiResolution) => void;
   onFallback?: (event: EmojiFallbackEvent) => void;
@@ -57,7 +60,33 @@ function providerId(provider: EmojiProviderRef): string {
 }
 
 function sizeClass(size: EmojiSize): string {
-  return typeof size === "number" ? "emoji-styles--size-custom" : `emoji-styles--size-${size}`;
+  if (typeof size !== "number") return `emoji-styles--size-${size}`;
+  const preset = Object.entries(SIZE_MAP).find(([, dimension]) => dimension === size)?.[0];
+  return preset ? `emoji-styles--size-${preset}` : "emoji-styles--size-custom";
+}
+
+function NativeEmojiGlyph({ emoji, dimension }: { emoji: string; dimension: number }) {
+  return (
+    <svg
+      className="emoji-styles__native-glyph"
+      width={dimension}
+      height={dimension}
+      viewBox="0 0 100 100"
+      aria-hidden="true"
+      focusable="false"
+    >
+      <text
+        className="emoji-styles__native-text"
+        x="50"
+        y="50"
+        textAnchor="middle"
+        dominantBaseline="central"
+        fontSize="88"
+      >
+        {emoji}
+      </text>
+    </svg>
+  );
 }
 
 export function Emoji({
@@ -65,6 +94,7 @@ export function Emoji({
   style: styleProp,
   provider: providerProp,
   fallbacks: fallbackProps,
+  nativeFallback: nativeFallbackProp,
   size = "md",
   className = "",
   label: labelProp,
@@ -72,7 +102,7 @@ export function Emoji({
   decorative = false,
   loading: loadingProp,
   lazy,
-  fallback = true,
+  fallback,
   onResolve,
   onFallback,
   onError,
@@ -82,6 +112,12 @@ export function Emoji({
   const fallbacks = fallbackProps
     ?? context.fallbacks
     ?? DEFAULT_FALLBACKS;
+  const nativeFallback = nativeFallbackProp ?? fallback ?? context.nativeFallback ?? true;
+  const hasNativeFallback = fallbacks.some((candidate) => providerId(candidate) === publicProviders.native.id);
+  const resolutionFallbacks = useMemo<readonly EmojiProviderRef[]>(
+    () => nativeFallback && !hasNativeFallback ? [...fallbacks, publicProviders.native] : fallbacks,
+    [fallbacks, hasNativeFallback, nativeFallback],
+  );
   const loading = loadingProp ?? (lazy === false ? "eager" : "lazy");
   const onResolveRef = useRef(onResolve);
   onResolveRef.current = onResolve;
@@ -89,11 +125,11 @@ export function Emoji({
   const label = labelProp ?? alt ?? metadata?.label ?? emoji;
   const dimension = typeof size === "number" ? size : SIZE_MAP[size] ?? SIZE_MAP.md;
   const syncChain = useMemo(
-    () => getFallbackChain(emoji, provider, fallbacks),
-    [emoji, provider, fallbacks],
+    () => getFallbackChain(emoji, provider, resolutionFallbacks),
+    [emoji, provider, resolutionFallbacks],
   );
   const syncUrl = syncChain[0] ?? getEmojiUrl(emoji, provider);
-  const resolutionKey = `${emoji}:${providerId(provider)}:${fallbacks.map(providerId).join(",")}`;
+  const resolutionKey = `${emoji}:${providerId(provider)}:${resolutionFallbacks.map(providerId).join(",")}:${nativeFallback}`;
   const [runtime, setRuntime] = useState<{
     key: string;
     chain: readonly string[];
@@ -106,12 +142,13 @@ export function Emoji({
     : { key: resolutionKey, chain: syncChain, index: 0, exhausted: false };
   const currentUrl = current.chain[current.index] ?? syncUrl;
   const isNativeProvider = providerId(provider) === publicProviders.native.id;
-  const showNative = isNativeProvider || !currentUrl || (current.exhausted && fallback);
+  const allowNative = isNativeProvider || hasNativeFallback || nativeFallback;
+  const showNative = isNativeProvider || (allowNative && (!currentUrl || current.exhausted));
 
   useEffect(() => {
     let active = true;
     setRuntime({ key: resolutionKey, chain: syncChain, index: 0, exhausted: false });
-    resolveEmoji(emoji, { provider, fallbacks })
+    resolveEmoji(emoji, { provider, fallbacks: resolutionFallbacks })
       .then((resolution) => {
         if (!active) return;
         onResolveRef.current?.(resolution);
@@ -147,8 +184,8 @@ export function Emoji({
       return;
     }
     setRuntime({ ...current, exhausted: true });
-    onFallback?.({ emoji, from: currentUrl, to: null, index: nextIndex, native: fallback });
-  }, [current, currentUrl, emoji, fallback, onError, onFallback, provider]);
+    onFallback?.({ emoji, from: currentUrl, to: null, index: nextIndex, native: allowNative });
+  }, [allowNative, current, currentUrl, emoji, onError, onFallback, provider]);
 
   const rootClassName = [
     "emoji-styles",
@@ -168,12 +205,12 @@ export function Emoji({
         aria-label={!decorative && metadata ? label : undefined}
         aria-hidden={decorative || undefined}
       >
-        {emoji}
+        <NativeEmojiGlyph emoji={emoji} dimension={dimension} />
       </span>
     );
   }
 
-  if (current.exhausted && !fallback) {
+  if ((!currentUrl || current.exhausted) && !allowNative) {
     return (
       <span
         className={`${rootClassName} emoji-styles--hidden`}

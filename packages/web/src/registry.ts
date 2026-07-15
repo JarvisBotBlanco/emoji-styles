@@ -1,6 +1,6 @@
-import type { EmojiAssetProvider, EmojiTheme } from "emoji-styles";
+import type { EmojiAssetProvider, EmojiStylesConfig, EmojiTheme } from "emoji-styles";
 
-export interface EmojiStylesWebConfig {
+export interface EmojiStylesWebConfig extends EmojiStylesConfig {
   providers?: Readonly<Record<string, EmojiAssetProvider>>;
   themes?: Readonly<Record<string, EmojiTheme>>;
   defaultTheme?: string | EmojiTheme;
@@ -9,6 +9,7 @@ export interface EmojiStylesWebConfig {
 const providers = new Map<string, EmojiAssetProvider>();
 const themes = new Map<string, EmojiTheme>();
 let defaultTheme: string | EmojiTheme | undefined;
+let runtimeConfig: EmojiStylesConfig = {};
 
 export function registerEmojiProvider(provider: EmojiAssetProvider): void {
   providers.set(provider.id, provider);
@@ -22,6 +23,15 @@ export function configureEmojiStyles(config: EmojiStylesWebConfig): void {
   for (const provider of Object.values(config.providers ?? {})) registerEmojiProvider(provider);
   for (const theme of Object.values(config.themes ?? {})) registerEmojiTheme(theme);
   if (config.defaultTheme !== undefined) defaultTheme = config.defaultTheme;
+  runtimeConfig = {
+    provider: config.provider ?? runtimeConfig.provider,
+    fallbacks: config.fallbacks ?? runtimeConfig.fallbacks,
+    nativeFallback: config.nativeFallback ?? runtimeConfig.nativeFallback,
+  };
+}
+
+export function getEmojiStylesConfig(): Readonly<EmojiStylesConfig> {
+  return runtimeConfig;
 }
 
 export function getRegisteredProvider(id: string): EmojiAssetProvider | undefined {

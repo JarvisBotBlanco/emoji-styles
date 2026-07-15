@@ -6,12 +6,14 @@ export type { ResolveEmojiOptions, ProviderCoverageOptions } from "./resolution"
 export type { LegacyEmojiAssetProvider, LegacyProviderAdapterOptions } from "./legacy";
 export type { EmojiProviderManifest, EmojiProviderManifestAsset, EmojiProviderGenerator, ManifestProviderOptions } from "./manifest-provider";
 export type { CompositeProviderOptions } from "./composite-provider";
+export type { EmojiConfigProviderRef, EmojiStylesConfig } from "./config";
 export type { EmojiTextToken } from "./tokenize";
 export type { EmojiThemeProviderRef, EmojiTokenAsset, EmojiTokenDefinitionInput, EmojiTokenDefinition, EmojiTokenMapInput, EmojiTokenMap, EmojiTheme, DefineEmojiThemeOptions, EmojiThemeValidationIssue, EmojiThemeValidationResult, ResolveEmojiTokenOptions, ResolvedEmojiToken, SemanticTokenResolveContext, SemanticTokenProvider, SemanticTokenProviderOptions, SerializeEmojiThemeOptions } from "./semantic-theme";
 export { providers, publicProviders, experimentalProviders, createCdnProvider, getTwemojiAssetId, SIZE_MAP } from "./providers";
 export { createMappedProvider } from "./mapped-provider";
 export { createManifestProvider, createGeneratedProvider, validateProviderManifest } from "./manifest-provider";
 export { createCompositeProvider } from "./composite-provider";
+export { defineEmojiConfig } from "./config";
 export { resolveEmoji, getProviderCoverage, getEmojiMetadata, isEmoji, createNormalizedEmoji } from "./resolution";
 export { validateProvider } from "./provider-validation";
 export { adaptLegacyProvider, isV2Provider } from "./legacy";

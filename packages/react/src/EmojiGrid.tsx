@@ -7,6 +7,7 @@ export interface EmojiGridProps {
   style?: EmojiStyle;
   provider?: EmojiProviderRef;
   fallbacks?: readonly EmojiProviderRef[];
+  nativeFallback?: boolean;
   size?: EmojiSize;
   className?: string;
   gap?: number;
@@ -24,6 +25,7 @@ export function EmojiGrid({
   style,
   provider,
   fallbacks,
+  nativeFallback,
   size = "md",
   className = "",
   gap = 4,
@@ -47,6 +49,7 @@ export function EmojiGrid({
             style={style}
             provider={provider}
             fallbacks={fallbacks}
+            nativeFallback={nativeFallback}
             size={size}
             label={getLabel?.(emoji, index)}
             decorative={decorative}

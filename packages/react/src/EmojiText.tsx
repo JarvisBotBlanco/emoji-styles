@@ -12,10 +12,12 @@ export interface EmojiTextProps extends Omit<HTMLAttributes<HTMLSpanElement>, "c
   children: string;
   provider?: EmojiProviderRef;
   fallbacks?: readonly EmojiProviderRef[];
+  nativeFallback?: boolean;
   size?: EmojiSize;
   emojiClassName?: string;
   lazy?: boolean;
   loading?: "lazy" | "eager";
+  /** @deprecated Use nativeFallback. */
   fallback?: boolean;
   decorative?: boolean;
   onResolve?: EmojiComponentProps["onResolve"];
@@ -31,11 +33,12 @@ export function EmojiText({
   children,
   provider,
   fallbacks,
+  nativeFallback,
   size = "md",
   emojiClassName,
   lazy = true,
   loading,
-  fallback = true,
+  fallback,
   decorative = false,
   onResolve,
   onFallback,
@@ -56,6 +59,7 @@ export function EmojiText({
             emoji={token.value}
             provider={provider}
             fallbacks={fallbacks}
+            nativeFallback={nativeFallback}
             size={size}
             className={emojiClassName}
             alt={getAlt?.(token.value) ?? getEmojiData(token.value)?.alt ?? token.value}

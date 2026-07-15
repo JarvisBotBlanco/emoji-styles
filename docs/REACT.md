@@ -4,6 +4,8 @@
 
 ## Setup
 
+For a project-wide policy, import [`emoji-styles.config.json`](./CONFIGURATION.md) once and pass it through `<EmojiProvider config={config}>`. Individual components then need no provider or fallback props.
+
 ```tsx
 import { Emoji, EmojiProvider, publicProviders } from "react-emoji-styles";
 import "react-emoji-styles/styles.css";
@@ -12,7 +14,8 @@ export function App() {
   return (
     <EmojiProvider
       provider={publicProviders.fluent3d}
-      fallbacks={[publicProviders.twemoji, publicProviders.native]}
+      fallbacks={[publicProviders.twemoji]}
+      nativeFallback={false}
     >
       <Emoji emoji="🚀" label="Deploy application" size="lg" />
     </EmojiProvider>
@@ -42,7 +45,22 @@ Decorative emoji are removed from the accessibility tree:
 <Emoji emoji="✨" decorative />
 ```
 
-Native fallback remains accessible through `role="img"` and the same label, so an image failure does not change the control's accessible name.
+When enabled, native fallback remains accessible through `role="img"` and the same label, so an image failure does not change the control's accessible name.
+
+## Fallback policy
+
+Provider fallback and OS fallback are independent:
+
+```tsx
+<Emoji
+  emoji="🚀"
+  provider={publicProviders.fluentAnimated}
+  fallbacks={[publicProviders.fluent3d, publicProviders.twemoji]}
+  nativeFallback={false}
+/>
+```
+
+This tries Fluent Animated, Fluent 3D and Twemoji in order. If none resolves, it renders no OS-dependent glyph. Set `nativeFallback` once on `EmojiProvider` to enforce the same policy throughout an application. The older `fallback` boolean remains as a deprecated alias.
 
 ## Resolution events
 
@@ -50,7 +68,8 @@ Native fallback remains accessible through `role="img"` and the same label, so a
 <Emoji
   emoji="🚀"
   provider={publicProviders.fluentAnimated}
-  fallbacks={[publicProviders.fluent3d, publicProviders.twemoji, publicProviders.native]}
+  fallbacks={[publicProviders.fluent3d, publicProviders.twemoji]}
+  nativeFallback={false}
   loading="eager"
   onResolve={(resolution) => console.log(resolution.attempts)}
   onFallback={({ from, to, native }) => console.log({ from, to, native })}
@@ -58,7 +77,7 @@ Native fallback remains accessible through `role="img"` and the same label, so a
 />
 ```
 
-`onResolve` receives the structured core v2 result. Runtime image errors continue through the URL chain and emit `onError` and `onFallback` without disabling accessible native fallback.
+`onResolve` receives the structured core v2 result. Runtime image errors continue through the configured URL chain and emit `onError` and `onFallback`; the final event reports whether native fallback was used.
 
 ## SSR and hydration
 
@@ -83,5 +102,5 @@ See the [Next.js example](../examples/next/README.md).
 
 - React 18.3 and React 19.2 are exercised independently in CI.
 - Named sizes are fully defined in static CSS.
-- Numeric image sizes use HTML `width` and `height` attributes. For custom numeric native-emoji sizing under strict CSP, attach a project class with the desired static font size.
-- `alt`, `lazy`, `style`, and `defaultStyle` remain available as deprecated compatibility props.
+- Named and numeric sizes apply equally to image providers and native OS emoji. Native glyphs use scalable SVG text with static presentation attributes, so custom dimensions remain compatible with strict CSP policies that disallow inline styles.
+- `alt`, `lazy`, `style`, `defaultStyle`, and `fallback` remain available as deprecated compatibility props.

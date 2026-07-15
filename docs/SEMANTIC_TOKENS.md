@@ -35,7 +35,8 @@ export const productTheme = defineEmojiTheme({
   id: "product",
   version: "1.0.0",
   defaultProvider: publicProviders.fluent3d,
-  fallbacks: [publicProviders.twemoji, publicProviders.native],
+  fallbacks: [publicProviders.twemoji],
+  nativeFallback: false,
 });
 ```
 

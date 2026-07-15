@@ -12,7 +12,7 @@ import {
   type ResolvedEmojiAsset,
   type ResolvedEmojiToken,
 } from "emoji-styles";
-import { getRegisteredProvider, getRegisteredProviders } from "./registry";
+import { getEmojiStylesConfig, getRegisteredProvider, getRegisteredProviders } from "./registry";
 
 export interface RenderEmojiOptions {
   provider?: EmojiProviderRef | string;
@@ -47,6 +47,7 @@ export interface RenderedEmojiHTML {
   tokenResolution?: ResolvedEmojiToken;
   preload?: EmojiPreload;
   fallbackUrls: readonly string[];
+  nativeFallback: boolean;
 }
 
 function escapeAttribute(value: string): string {
@@ -65,6 +66,14 @@ function resolveRef(ref: EmojiProviderRef | string): EmojiProviderRef {
   return typeof ref === "string" ? getRegisteredProvider(ref) ?? ref as EmojiProviderRef : ref;
 }
 
+function providerId(ref: EmojiProviderRef | string): string {
+  return typeof ref === "string" ? ref : ref.id;
+}
+
+function includesNative(refs: readonly (EmojiProviderRef | string)[]): boolean {
+  return refs.some((ref) => providerId(ref) === publicProviders.native.id);
+}
+
 function mimeType(format: EmojiAssetFormat): string {
   return format === "svg" ? "image/svg+xml" : `image/${format}`;
 }
@@ -80,31 +89,37 @@ function renderMarkup(
   asset: ResolvedEmojiAsset | null,
   options: RenderEmojiOptions,
   fallbackUrls: readonly string[] = [],
+  nativeFallback = true,
   tokenHost?: { token: string; themeId: string },
 ): string {
   const size = numericSize(options.size);
   const classes = ["styled-emoji", options.className].filter(Boolean).join(" ");
   const tagName = options.element ?? "span";
-  const providerId = typeof options.provider === "string" ? options.provider : options.provider?.id;
+  const requestedProviderId = typeof options.provider === "string" ? options.provider : options.provider?.id;
   const componentAttributes = tagName === "styled-emoji" ? [
     `emoji="${escapeAttribute(emoji)}"`,
     tokenHost ? `token="${escapeAttribute(tokenHost.token)}"` : "",
     tokenHost ? `theme="${escapeAttribute(tokenHost.themeId)}"` : "",
-    providerId ? `provider="${escapeAttribute(providerId)}"` : "",
+    requestedProviderId ? `provider="${escapeAttribute(requestedProviderId)}"` : "",
     options.label ? `label="${escapeAttribute(options.label)}"` : "",
     `size="${size}"`,
     options.decorative ? "decorative" : "",
     `loading="${options.loading ?? "lazy"}"`,
+    options.fallbacks?.length ? `fallbacks="${escapeAttribute(options.fallbacks.map(providerId).join(","))}"` : "",
+    options.nativeFallback === false ? `native-fallback="false"` : "",
   ].filter(Boolean) : [];
   const common = [
     `class="${escapeAttribute(classes)}"`,
     `data-emoji="${escapeAttribute(emoji)}"`,
     `data-size="${size}"`,
-    asset ? `data-provider="${escapeAttribute(asset.providerId)}"` : `data-provider="native"`,
-    decorative ? `aria-hidden="true"` : `role="img" aria-label="${escapeAttribute(label)}"`,
+    asset ? `data-provider="${escapeAttribute(asset.providerId)}"` : `data-provider="${nativeFallback ? "native" : "unresolved"}"`,
+    decorative || !asset && !nativeFallback ? `aria-hidden="true"` : `role="img" aria-label="${escapeAttribute(label)}"`,
     ...componentAttributes,
   ].join(" ");
-  const native = `<span class="styled-emoji__native"${asset ? " hidden" : ""} aria-hidden="true">${escapeText(emoji)}</span>`;
+  const nativeGlyph = nativeFallback
+    ? `<svg class="styled-emoji__native-glyph" width="${size}" height="${size}" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><text class="styled-emoji__native-text" x="50" y="50" text-anchor="middle" dominant-baseline="central" font-size="88">${escapeText(emoji)}</text></svg>`
+    : "";
+  const native = `<span class="styled-emoji__native"${asset || !nativeFallback ? " hidden" : ""} aria-hidden="true">${nativeGlyph}</span>`;
   if (!asset) return `<${tagName} ${common}>${native}</${tagName}>`;
 
   const remainingFallbacks = fallbackUrls.filter((url) => url !== asset.url);
@@ -119,15 +134,21 @@ export async function renderEmojiToHTMLResult(
   emoji: string,
   options: RenderEmojiOptions = {},
 ): Promise<RenderedEmojiHTML> {
-  const provider = resolveRef(options.provider ?? publicProviders.twemoji);
-  const requestedFallbacks = options.fallbacks ?? (options.nativeFallback === false ? [] : [publicProviders.native]);
+  const config = getEmojiStylesConfig();
+  const provider = resolveRef(options.provider ?? config.provider ?? publicProviders.twemoji);
+  const configuredFallbacks = options.fallbacks ?? config.fallbacks ?? [];
+  const nativeFallbackSetting = options.nativeFallback ?? config.nativeFallback ?? true;
+  const nativeFallback = providerId(provider) === publicProviders.native.id || includesNative(configuredFallbacks) || nativeFallbackSetting;
+  const requestedFallbacks = nativeFallback && !includesNative(configuredFallbacks)
+    ? [...configuredFallbacks, publicProviders.native]
+    : configuredFallbacks;
   const fallbacks = requestedFallbacks.map(resolveRef);
   const resolution = await resolveEmoji(emoji, { provider, fallbacks });
   const label = options.label ?? resolution.metadata.label;
   const fallbackUrls = getFallbackChain(emoji, provider, fallbacks);
   const asset = resolution.selected;
   return {
-    html: renderMarkup(emoji, label, options.decorative ?? false, asset, options, fallbackUrls),
+    html: renderMarkup(emoji, label, options.decorative ?? false, asset, options, fallbackUrls, nativeFallback),
     emoji,
     label,
     decorative: options.decorative ?? false,
@@ -135,6 +156,7 @@ export async function renderEmojiToHTMLResult(
     resolution,
     preload: asset ? { href: asset.url, as: "image", type: mimeType(asset.format) } : undefined,
     fallbackUrls,
+    nativeFallback,
   };
 }
 
@@ -150,11 +172,16 @@ export async function renderEmojiTokenToHTMLResult(
   theme: EmojiTheme,
   options: RenderEmojiTokenOptions = {},
 ): Promise<RenderedEmojiHTML> {
-  const provider = options.provider ? resolveRef(options.provider) : undefined;
-  const fallbacks = options.fallbacks?.map(resolveRef);
+  const config = getEmojiStylesConfig();
+  const providerRef = options.provider ?? config.provider;
+  const provider = providerRef ? resolveRef(providerRef) : undefined;
+  const configuredFallbacks = options.fallbacks ?? config.fallbacks ?? theme.fallbacks ?? [];
+  const nativeFallback = includesNative(configuredFallbacks) || (options.nativeFallback ?? config.nativeFallback ?? theme.nativeFallback ?? true);
+  const fallbacks = configuredFallbacks.map(resolveRef);
   const tokenResolution = await resolveEmojiToken(token, theme, {
     provider,
     fallbacks,
+    nativeFallback,
     locale: options.locale,
     providers: getRegisteredProviders(),
   });
@@ -165,7 +192,9 @@ export async function renderEmojiTokenToHTMLResult(
     ?? theme.defaultProvider
     ?? publicProviders.twemoji;
   const tokenProvider = resolveRef(tokenProviderRef);
-  const tokenFallbacks = (options.fallbacks ?? theme.fallbacks ?? [publicProviders.native]).map(resolveRef);
+  const tokenFallbacks = nativeFallback && !includesNative(configuredFallbacks)
+    ? [...configuredFallbacks, publicProviders.native].map(resolveRef)
+    : configuredFallbacks.map(resolveRef);
   const fallbackUrls = tokenResolution.source === "emoji-provider"
     ? getFallbackChain(tokenResolution.emoji, tokenProvider, tokenFallbacks)
     : [];
@@ -177,6 +206,7 @@ export async function renderEmojiTokenToHTMLResult(
       asset,
       options,
       fallbackUrls,
+      nativeFallback,
       { token, themeId: theme.id },
     ),
     emoji: tokenResolution.emoji,
@@ -187,6 +217,7 @@ export async function renderEmojiTokenToHTMLResult(
     tokenResolution,
     preload: asset ? { href: asset.url, as: "image", type: mimeType(asset.format) } : undefined,
     fallbackUrls,
+    nativeFallback,
   };
 }
 

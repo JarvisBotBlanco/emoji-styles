@@ -43,4 +43,13 @@ describe("DOM transformer", () => {
     expect(undoEmojiTextTransform(paragraph)).toBe(2);
     expect(paragraph.textContent).toBe("Ready 🚀 and 🎉");
   });
+
+  it("propagates provider fallback policy to generated elements", () => {
+    const paragraph = document.createElement("p");
+    paragraph.textContent = "Launch 🚀";
+    transformEmojiText(paragraph, { fallbacks: ["noto", "twemoji"], nativeFallback: false });
+    const element = paragraph.querySelector("styled-emoji");
+    expect(element?.getAttribute("fallbacks")).toBe("noto,twemoji");
+    expect(element?.getAttribute("native-fallback")).toBe("false");
+  });
 });

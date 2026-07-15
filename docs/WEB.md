@@ -2,6 +2,8 @@
 
 `emoji-styles-web` exposes the same core resolution and semantic-theme contracts without requiring React. It provides an explicit Web Component registration, a Node-safe SSR renderer, and a reversible DOM text transformer.
 
+`configureEmojiStyles()` accepts the shared [project configuration](./CONFIGURATION.md), allowing elements and SSR calls to inherit one provider and fallback policy.
+
 ## Install and register
 
 ```ts
@@ -15,10 +17,14 @@ defineStyledEmoji();
 <styled-emoji
   emoji="🚀"
   provider="fluent-animated"
+  fallbacks="fluent-3d,twemoji"
+  native-fallback="false"
   label="Deploy application"
   size="24"
 ></styled-emoji>
 ```
+
+`fallbacks` is an ordered comma-separated provider chain. `native-fallback="false"` prevents the component from revealing an OS-dependent Unicode glyph after that chain is exhausted.
 
 Registration is explicit, so importing the package during SSR does not access `window`, `document`, or `customElements`.
 
@@ -62,6 +68,8 @@ import { renderEmojiToHTML, renderEmojiToHTMLResult } from "emoji-styles-web";
 
 const html = await renderEmojiToHTML("🚀", {
   provider: "fluent-3d",
+  fallbacks: ["noto", "twemoji"],
+  nativeFallback: false,
   label: "Deploy application",
   size: 24,
 });
@@ -92,6 +100,8 @@ defineStyledEmoji();
 
 const metrics = transformEmojiText(document.querySelector("main")!, {
   provider: "twemoji",
+  fallbacks: ["noto"],
+  nativeFallback: false,
   size: 20,
 });
 
@@ -133,4 +143,4 @@ Add `CUSTOM_ELEMENTS_SCHEMA` to the consuming module or standalone component, th
 
 ## Events
 
-The component emits bubbling `emoji-resolved`, `emoji-fallback`, and `emoji-error` custom events. Event details contain provider and fallback information but never execute or inject markup.
+The component emits bubbling `emoji-resolved`, `emoji-fallback`, and `emoji-error` custom events. Event details contain provider and fallback information; the terminal fallback event includes `native: true|false`. Events never execute or inject markup.

@@ -58,6 +58,8 @@ export interface EmojiTheme {
   tokens: EmojiTokenMap;
   defaultProvider?: EmojiThemeProviderRef;
   fallbacks?: readonly EmojiThemeProviderRef[];
+  /** Whether native OS emoji is appended as the terminal fallback. Defaults to true. */
+  nativeFallback?: boolean;
   inherits: readonly string[];
 }
 
@@ -66,6 +68,7 @@ export interface DefineEmojiThemeOptions {
   version?: string;
   defaultProvider?: EmojiThemeProviderRef;
   fallbacks?: readonly EmojiThemeProviderRef[];
+  nativeFallback?: boolean;
   extends?: EmojiTheme | readonly EmojiTheme[];
   /** Preserved ancestry metadata when parsing a flattened serialized theme. */
   inherits?: readonly string[];
@@ -87,6 +90,7 @@ export interface EmojiThemeValidationResult {
 export interface ResolveEmojiTokenOptions {
   provider?: EmojiThemeProviderRef;
   fallbacks?: readonly EmojiThemeProviderRef[];
+  nativeFallback?: boolean;
   locale?: string;
   providers?: Readonly<Record<string, EmojiAssetProvider>>;
 }
@@ -101,7 +105,7 @@ export interface ResolvedEmojiToken {
   locale?: string;
   asset: ResolvedEmojiAsset | null;
   emojiResolution: EmojiResolution | null;
-  source: "custom-asset" | "semantic-provider" | "emoji-provider" | "native";
+  source: "custom-asset" | "semantic-provider" | "emoji-provider" | "native" | "unresolved";
 }
 
 export interface SemanticTokenResolveContext {
@@ -281,6 +285,9 @@ export function validateEmojiTheme(theme: unknown): EmojiThemeValidationResult {
       }
     }
   }
+  if (theme.nativeFallback !== undefined && typeof theme.nativeFallback !== "boolean") {
+    error("nativeFallback", "invalid-native-fallback", "Theme nativeFallback must be boolean");
+  }
   if (!Array.isArray(theme.inherits)) {
     error("inherits", "invalid-inherits", "Theme inherits must be an array");
   } else {
@@ -335,6 +342,7 @@ export function defineEmojiTheme(
     tokens: normalizedTokens,
     defaultProvider: options.defaultProvider ?? lastParent?.defaultProvider,
     fallbacks: options.fallbacks ?? lastParent?.fallbacks,
+    nativeFallback: options.nativeFallback ?? lastParent?.nativeFallback,
     inherits: [...new Set([
       ...(options.inherits ?? []),
       ...parents.flatMap((theme) => [...theme.inherits, theme.id]),
@@ -461,7 +469,8 @@ export async function resolveEmojiToken(
   }
 
   const requestedFallbacks = options.fallbacks ?? theme.fallbacks ?? [];
-  const configuredFallbacks = includesNativeProvider(requestedFallbacks)
+  const nativeFallback = options.nativeFallback ?? theme.nativeFallback ?? true;
+  const configuredFallbacks = includesNativeProvider(requestedFallbacks) || !nativeFallback
     ? requestedFallbacks
     : [...requestedFallbacks, publicProviders.native];
   const resolutionOptions: ResolveEmojiOptions = {
@@ -479,7 +488,9 @@ export async function resolveEmojiToken(
     locale: options.locale,
     asset: emojiResolution.selected,
     emojiResolution,
-    source: emojiResolution.selected ? "emoji-provider" : "native",
+    source: emojiResolution.selected
+      ? "emoji-provider"
+      : emojiResolution.nativeFallback ? "native" : "unresolved",
   };
 }
 
@@ -557,6 +568,7 @@ function serializableTheme(theme: EmojiTheme) {
     version: theme.version,
     ...(theme.defaultProvider ? { defaultProvider: serializableProvider(theme.defaultProvider) } : {}),
     ...(theme.fallbacks ? { fallbacks: theme.fallbacks.map((fallback) => serializableProvider(fallback)) } : {}),
+    ...(theme.nativeFallback !== undefined ? { nativeFallback: theme.nativeFallback } : {}),
     ...(theme.inherits.length > 0 ? { inherits: [...theme.inherits] } : {}),
     tokens: Object.fromEntries(Object.entries(theme.tokens).map(([token, definition]) => [token, {
       ...definition,
@@ -601,6 +613,7 @@ export function migrateEmojiTheme(input: unknown): EmojiTheme {
     fallbacks: Array.isArray(document.fallbacks)
       ? document.fallbacks.filter((fallback): fallback is string => typeof fallback === "string")
       : undefined,
+    nativeFallback: typeof document.nativeFallback === "boolean" ? document.nativeFallback : undefined,
     inherits: Array.isArray(document.inherits)
       ? document.inherits.filter((themeId): themeId is string => typeof themeId === "string")
       : undefined,

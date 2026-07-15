@@ -197,6 +197,30 @@ describe("semantic emoji themes", () => {
     });
   });
 
+  it("can disable the implicit OS fallback at theme or call level", async () => {
+    const theme = defineEmojiTheme({
+      "status.future": { emoji: "🫪", label: "Distorted face" },
+    }, {
+      id: "deterministic",
+      version: "1.0.0",
+      defaultProvider: "twemoji",
+      fallbacks: [],
+      nativeFallback: false,
+    });
+    await expect(resolveEmojiToken("status.future", theme)).resolves.toMatchObject({
+      source: "unresolved",
+      asset: null,
+      emojiResolution: {
+        nativeFallback: false,
+        attempts: [{ providerId: "twemoji", status: "unsupported" }],
+      },
+    });
+    await expect(resolveEmojiToken("status.future", theme, { nativeFallback: true })).resolves.toMatchObject({
+      source: "native",
+      emojiResolution: { nativeFallback: true },
+    });
+  });
+
   it("rejects invalid names, labels, assets, and schema versions", () => {
     expect(() => defineEmojiTheme({
       deploy: { emoji: "not emoji", label: "", asset: "Bad Asset" },
