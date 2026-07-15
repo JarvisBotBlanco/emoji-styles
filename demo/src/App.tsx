@@ -428,7 +428,7 @@ export function Reaction() {
             <a href="#collection">Collection</a>
           </div>
           <div className="nav-actions">
-            <a href="https://github.com/JarvisBotBlanco/emoji-styles" target="_blank" rel="noopener noreferrer" className="nav-link" aria-label="View on GitHub"><GitHubIcon /></a>
+            <a href="https://github.com/Blancochuy/emoji-styles" target="_blank" rel="noopener noreferrer" className="nav-link" aria-label="View on GitHub"><GitHubIcon /></a>
             <button className="theme-toggle-btn" onClick={toggleTheme} aria-label={`Switch to ${theme === "dark" ? "light" : "dark"} theme`}>
               {theme === "dark" ? <SunIcon /> : <MoonIcon />}
             </button>
@@ -630,12 +630,12 @@ export function Reaction() {
 
           <section className="cta-section">
             <div><span className="eyebrow">Ready when you are</span><h2>Give every reaction<br /><em>the right expression.</em></h2></div>
-            <div className="cta-actions"><div className="install-inline"><span className="terminal-glyph">›_</span><code className="install-code">npm i react-emoji-styles</code><CopyButton text="npm install react-emoji-styles" /></div><a href="https://github.com/JarvisBotBlanco/emoji-styles" target="_blank" rel="noopener noreferrer">View on GitHub ↗</a></div>
+            <div className="cta-actions"><div className="install-inline"><span className="terminal-glyph">›_</span><code className="install-code">npm i react-emoji-styles</code><CopyButton text="npm install react-emoji-styles" /></div><a href="https://github.com/Blancochuy/emoji-styles" target="_blank" rel="noopener noreferrer">View on GitHub ↗</a></div>
             <div className="cta-emoji"><Emoji emoji="🤩" provider={publicProviders.fluent3d} size={150} /></div>
           </section>
         </main>
 
-        <footer className="footer"><div className="footer-left"><span className="brand-mark"><Emoji emoji="🙂" size={16} /></span><span className="footer-brand">Emoji Styles</span></div><div className="footer-links"><a href="https://github.com/JarvisBotBlanco/emoji-styles" target="_blank" rel="noopener noreferrer"><GitHubIcon /> GitHub</a><a href="https://github.com/JarvisBotBlanco/emoji-styles/blob/master/THIRD_PARTY_NOTICES.md" target="_blank" rel="noopener noreferrer">Asset licenses</a><span>MIT code</span></div><span className="footer-right">Built for expressive interfaces.</span></footer>
+        <footer className="footer"><div className="footer-left"><span className="brand-mark"><Emoji emoji="🙂" size={16} /></span><span className="footer-brand">Emoji Styles</span></div><div className="footer-links"><a href="https://github.com/Blancochuy/emoji-styles" target="_blank" rel="noopener noreferrer"><GitHubIcon /> GitHub</a><a href="https://github.com/Blancochuy/emoji-styles/blob/master/docs/THIRD_PARTY_NOTICES.md" target="_blank" rel="noopener noreferrer">Asset licenses</a><span>MIT code</span></div><span className="footer-right">Built by Blancochuy.</span></footer>
       </div>
     </EmojiProvider>
   );

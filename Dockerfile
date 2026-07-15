@@ -15,5 +15,5 @@ RUN pnpm --filter emoji-styles build && pnpm --filter react-emoji-styles build &
 
 FROM nginx:alpine
 COPY --from=builder /app/demo/dist /usr/share/nginx/html
-COPY nginx.conf /etc/nginx/conf.d/default.conf
+COPY deploy/nginx.conf /etc/nginx/conf.d/default.conf
 EXPOSE 80

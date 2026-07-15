@@ -18,4 +18,4 @@ Optimization is conservative:
 - APNG files are detected from their `acTL` chunk and preserved byte-for-byte;
 - candidates are rejected when animation metadata changes or output size does not improve.
 
-Do not place Apple, Samsung, or other proprietary artwork here without written redistribution permission and an update to `LICENSE_POLICY.md`.
+Do not place Apple, Samsung, or other proprietary artwork here without written redistribution permission and an update to [`docs/LICENSE_POLICY.md`](../docs/LICENSE_POLICY.md).

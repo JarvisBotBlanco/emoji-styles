@@ -26,9 +26,9 @@
     "typescript": "^5.5.0",
     "vitest": "^2.1.9"
   },
-  "repository": { "type": "git", "url": "git+https://github.com/JarvisBotBlanco/emoji-styles.git", "directory": "packages/core" },
-  "bugs": { "url": "https://github.com/JarvisBotBlanco/emoji-styles/issues" },
-  "homepage": "https://github.com/JarvisBotBlanco/emoji-styles#readme",
+  "repository": { "type": "git", "url": "git+https://github.com/Blancochuy/emoji-styles.git", "directory": "packages/core" },
+  "bugs": { "url": "https://github.com/Blancochuy/emoji-styles/issues" },
+  "homepage": "https://github.com/Blancochuy/emoji-styles#readme",
   "keywords": ["emoji", "icons", "design-system", "semantic-ui", "fluent-emoji", "noto-emoji", "twemoji"],
   "license": "MIT"
 }

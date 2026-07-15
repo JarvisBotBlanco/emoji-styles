@@ -1,6 +1,6 @@
 # Asset licensing policy
 
-The MIT license in `LICENSE` covers the source code created for this repository. It does not grant rights to third-party emoji artwork.
+The MIT license in [`LICENSE`](../LICENSE) covers the source code created for this repository. It does not grant rights to third-party emoji artwork.
 
 ## Distribution policy
 
@@ -15,7 +15,7 @@ The MIT license in `LICENSE` covers the source code created for this repository.
 
 1. Is the artwork license explicit and applicable to the exact files?
 2. Does it permit redistribution and commercial use?
-3. Are attribution and notice requirements included in `THIRD_PARTY_NOTICES.md`?
+3. Are attribution and notice requirements included in [`THIRD_PARTY_NOTICES.md`](./THIRD_PARTY_NOTICES.md)?
 4. Is the upstream version immutable and reproducible?
 5. Does the package avoid implying vendor endorsement?
 
