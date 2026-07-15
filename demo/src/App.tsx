@@ -471,7 +471,7 @@ export function Reaction() {
               <div className="orbit orbit-two" />
               <div className="hero-core">
                 <span className="core-pulse" />
-                <Emoji emoji={featuredEmoji} provider={activeStyle.provider} size={104} />
+                <Emoji emoji={featuredEmoji} provider={activeStyle.provider} size={104} className="motion-float motion-hero" />
               </div>
               {STYLES.slice(0, 6).map((s, i) => (
                 <button
@@ -481,7 +481,7 @@ export function Reaction() {
                   aria-label={`Preview ${s.label}`}
                 >
                   <span className="provider-dot" />
-                  <Emoji emoji={featuredEmoji} provider={s.provider} size={i === 0 ? 48 : 40} />
+                  <Emoji emoji={featuredEmoji} provider={s.provider} size={i === 0 ? 48 : 40} className="motion-drift" />
                   <small>{s.label}</small>
                 </button>
               ))}
@@ -513,7 +513,7 @@ export function Reaction() {
               <article className="process-card">
                 <span className="process-number">01</span>
                 <div className="process-visual provider-mini-grid">
-                  {STYLES.slice(0, 4).map((s) => <span key={s.key}><Emoji emoji="✨" provider={s.provider} size={27} /></span>)}
+                  {STYLES.slice(0, 4).map((s) => <span key={s.key}><Emoji emoji="✨" provider={s.provider} size={27} className="motion-sparkle" /></span>)}
                 </div>
                 <h3>Choose a provider</h3>
                 <p>Pick one visual system—or switch at runtime with a single prop.</p>
@@ -556,7 +556,7 @@ export function Reaction() {
                 <div className="agent-console-bar"><span>agent / ui-task</span><i>verified</i></div>
                 <div className="agent-prompt"><span>›</span><p>Use our deploy icon for action.deploy, with an accessible Unicode fallback.</p></div>
                 <pre><code>{highlightCode(`const product = defineEmojiTheme({\n  'action.deploy': {\n    emoji: '🚀',\n    label: 'Deploy application',\n    asset: { url: '/icons/deploy.svg', format: 'svg' },\n  },\n});\n\n<EmojiToken token="action.deploy" theme={product} />`, "tsx")}</code></pre>
-                <div className="agent-result"><span>Output</span><EmojiToken token="action.deploy" theme={PRODUCT_THEME} size={56} lazy={false} /><strong>intent in · brand asset out</strong></div>
+                <div className="agent-result"><span>Output</span><EmojiToken token="action.deploy" theme={PRODUCT_THEME} size={56} lazy={false} className="motion-float motion-subtle" /><strong>intent in · brand asset out</strong></div>
               </div>
             </div>
           </section>
@@ -595,7 +595,7 @@ export function Reaction() {
                   </div>
                   <div className="featured-output">
                     <div className="output-glow" />
-                    <Emoji emoji={featuredEmoji} provider={activeStyle.provider} size={Math.max(size.px * 2, 64)} />
+                    <Emoji emoji={featuredEmoji} provider={activeStyle.provider} size={Math.max(size.px * 2, 64)} className="motion-float motion-subtle" />
                     <div><span>Current output</span><strong>{featuredEmoji} · {activeStyle.label}</strong></div>
                   </div>
                   <div className="quick-grid">
@@ -622,7 +622,7 @@ export function Reaction() {
               {FRAMEWORK_EXAMPLES.map((fw) => <button key={fw.id} className={`${fw.id} ${activeTab === fw.id ? "active" : ""}`} onClick={() => setActiveTab(fw.id)}><FrameworkIcon id={fw.id} /><span>{fw.label}</span></button>)}
             </div>
             <div className="framework-content-new">
-              <div className="framework-result"><span>Rendered output</span><Emoji emoji={featuredEmoji} size={96} /><strong>{activeStyle.label}</strong></div>
+              <div className="framework-result"><span>Rendered output</span><Emoji emoji={featuredEmoji} size={96} className="motion-float motion-subtle" /><strong>{activeStyle.label}</strong></div>
               <div className="code-block"><div className="code-header"><span className="code-lang">{activeTab === "react" ? "tsx" : activeTab}</span><CopyButton text={activeExample.code} label="Copy code" /></div><pre className="code-content"><code>{highlightCode(activeExample.code, activeTab)}</code></pre></div>
             </div>
           </section>
@@ -638,7 +638,7 @@ export function Reaction() {
           <section className="cta-section">
             <div><span className="eyebrow">Ready when you are</span><h2>Give every reaction<br /><em>the right expression.</em></h2></div>
             <div className="cta-actions"><div className="install-inline"><span className="terminal-glyph">›_</span><code className="install-code">npm i react-emoji-styles</code><CopyButton text="npm install react-emoji-styles" /></div><a href="https://github.com/Blancochuy/emoji-styles" target="_blank" rel="noopener noreferrer">View on GitHub ↗</a></div>
-            <div className="cta-emoji"><Emoji emoji="🤩" provider={publicProviders.fluent3d} size={150} /></div>
+            <div className="cta-emoji"><Emoji emoji="🤩" provider={publicProviders.fluent3d} size={150} className="motion-celebrate" /></div>
           </section>
         </main>
 
