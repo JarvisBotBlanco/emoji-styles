@@ -12,43 +12,12 @@ export interface EmojiComponentProps {
   alt?: string;
   lazy?: boolean;
   fallback?: boolean;
-  /** Add lightweight, reduced-motion-aware movement without changing providers. */
-  motion?: EmojiMotion | false;
 }
-
-export type EmojiMotion = "float" | "bounce" | "pulse" | "wiggle";
 
 const SKELETON_KEYFRAMES = `
 @keyframes emoji-skeleton-pulse {
   0%, 100% { opacity: 0.4; }
   50% { opacity: 0.7; }
-}
-@keyframes emoji-styles-float {
-  0%, 100% { transform: translateY(0) rotate(-2deg); }
-  50% { transform: translateY(-12%) rotate(2deg); }
-}
-@keyframes emoji-styles-bounce {
-  0%, 100% { transform: translateY(0) scale(1); }
-  38% { transform: translateY(-18%) scale(1.04, 0.96); }
-  55% { transform: translateY(0) scale(0.96, 1.04); }
-  72% { transform: translateY(-7%) scale(1.02, 0.98); }
-}
-@keyframes emoji-styles-pulse {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.12); }
-}
-@keyframes emoji-styles-wiggle {
-  0%, 100% { transform: rotate(0); }
-  25% { transform: rotate(-8deg); }
-  75% { transform: rotate(8deg); }
-}
-.emoji-styles-motion { transform-origin: 50% 70%; will-change: transform; }
-.emoji-styles-motion-float { animation: emoji-styles-float 2.8s ease-in-out infinite; }
-.emoji-styles-motion-bounce { animation: emoji-styles-bounce 1.8s cubic-bezier(.45, 0, .25, 1) infinite; }
-.emoji-styles-motion-pulse { animation: emoji-styles-pulse 1.6s ease-in-out infinite; }
-.emoji-styles-motion-wiggle { animation: emoji-styles-wiggle 1.4s ease-in-out infinite; }
-@media (prefers-reduced-motion: reduce) {
-  .emoji-styles-motion { animation: none !important; }
 }
 `;
 
@@ -62,7 +31,7 @@ function ensureStyles() {
   }
 }
 
-export function Emoji({ emoji, style: styleProp, provider: providerProp, size = "md", className = "", alt, lazy = true, fallback = true, motion = false }: EmojiComponentProps) {
+export function Emoji({ emoji, style: styleProp, provider: providerProp, size = "md", className = "", alt, lazy = true, fallback = true }: EmojiComponentProps) {
   const ctx = useEmojiContext();
   const provider = providerProp ?? styleProp ?? ctx.defaultProvider;
   const [failed, setFailed] = useState(false);
@@ -75,11 +44,6 @@ export function Emoji({ emoji, style: styleProp, provider: providerProp, size = 
   const url = useMemo(() => getEmojiUrl(emoji, provider), [emoji, provider]);
   const fallbackChain = useMemo(() => getFallbackChain(emoji, provider), [emoji, provider]);
   const initialUrl = fallbackChain[0] ?? url;
-  const motionClassName = motion ? `emoji-styles-motion emoji-styles-motion-${motion}` : "";
-
-  useEffect(() => {
-    if (motion) ensureStyles();
-  }, [motion]);
 
   // Reset loaded state when url changes (style switch)
   useEffect(() => {
@@ -144,7 +108,7 @@ export function Emoji({ emoji, style: styleProp, provider: providerProp, size = 
   if (isNative) {
     return (
       <span
-        className={`${className} ${motionClassName}`.trim()}
+        className={className}
         aria-label={alt}
         style={{
           width: dimension,
@@ -170,7 +134,7 @@ export function Emoji({ emoji, style: styleProp, provider: providerProp, size = 
   return (
     <span
       ref={containerRef}
-      className={`inline-block align-middle ${className} ${motionClassName}`.trim()}
+      className={`inline-block align-middle ${className}`}
       style={{
         width: dimension,
         height: dimension,

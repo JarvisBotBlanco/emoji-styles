@@ -1,4 +1,4 @@
-export { Emoji, type EmojiComponentProps, type EmojiMotion } from "./Emoji";
+export { Emoji, type EmojiComponentProps } from "./Emoji";
 export { EmojiText, type EmojiTextProps } from "./EmojiText";
 export { EmojiToken, type EmojiTokenProps } from "./EmojiToken";
 export { EmojiGrid, type EmojiGridProps } from "./EmojiGrid";

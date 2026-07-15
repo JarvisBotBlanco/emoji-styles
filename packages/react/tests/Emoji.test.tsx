@@ -48,14 +48,6 @@ describe("Emoji", () => {
     expect(image).toHaveAttribute("height", "32");
   });
 
-  it("adds reusable motion while respecting the selected provider", () => {
-    render(<Emoji emoji="🚀" provider={publicProviders.fluent3d} motion="bounce" lazy={false} />);
-
-    const wrapper = screen.getByRole("img").parentElement;
-    expect(wrapper).toHaveClass("emoji-styles-motion", "emoji-styles-motion-bounce");
-    expect(screen.getByRole("img").getAttribute("src")).toContain("fluentui-emoji");
-  });
-
   it("inherits a provider from context", () => {
     render(
       <EmojiProvider provider={customProvider}>
