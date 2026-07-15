@@ -7,6 +7,7 @@ import type {
   ProviderVisibility,
 } from "./types";
 import { fluentAssetNames } from "./fluent-data";
+import { fluentAnimatedAssetNames } from "./fluent-animated-data";
 
 export interface CdnProviderOptions {
   id: string;
@@ -66,7 +67,42 @@ export function getTwemojiAssetId(data: Pick<EmojiData, "codepoint">): string {
 }
 
 const FLUENT_COMMIT = "62ecdc0d7ca5c6df32148c169556bc8d3782fca4";
+const FLUENT_ANIMATED_COMMIT = "daa0365c09795789ed2bc6e8b228c97736cb6669";
 const NOTO_COMMIT = "8998f5dd683424a73e2314a8c1f1e359c19e8742";
+
+const FLUENT_SKIN_TONES: Record<string, readonly [folder: string, filename: string]> = {
+  "1f3fb": ["Light", "light"],
+  "1f3fc": ["Medium-Light", "medium-light"],
+  "1f3fd": ["Medium", "medium"],
+  "1f3fe": ["Medium-Dark", "medium-dark"],
+  "1f3ff": ["Dark", "dark"],
+};
+
+function fluentAnimatedFilename(data: EmojiData): string | null {
+  const codepoints = data.codepoint
+    .toLowerCase()
+    .split("-")
+    .filter((codepoint) => codepoint !== "fe0f");
+  const skinTones = codepoints.filter((codepoint) => FLUENT_SKIN_TONES[codepoint]);
+  if (skinTones.length > 1) return null;
+
+  const baseCodepoint = codepoints
+    .filter((codepoint) => !FLUENT_SKIN_TONES[codepoint])
+    .join("-");
+  const mapped = fluentAnimatedAssetNames[baseCodepoint];
+  if (!mapped) return null;
+
+  const [folder, basename, hasSkinTones] = mapped;
+  if (skinTones.length === 0) {
+    return hasSkinTones
+      ? `${encodeURIComponent(folder)}/Default/animated/${basename}_animated_default`
+      : `${encodeURIComponent(folder)}/animated/${basename}_animated`;
+  }
+  if (!hasSkinTones) return null;
+
+  const [toneFolder, toneFilename] = FLUENT_SKIN_TONES[skinTones[0]];
+  return `${encodeURIComponent(folder)}/${toneFolder}/animated/${basename}_animated_${toneFilename}`;
+}
 
 function fluentFilename(data: EmojiData, style: "3D" | "Color" | "Flat") {
   const codepoint = data.codepoint.toLowerCase().replace(/-fe0f/g, "");
@@ -82,6 +118,22 @@ function fluentFilename(data: EmojiData, style: "3D" | "Color" | "Flat") {
 
 /** Providers whose artwork has an explicit redistribution license. */
 export const publicProviders = {
+  fluentAnimated: createCdnProvider({
+    id: "fluent-animated",
+    label: "Fluent Emoji Animated",
+    baseUrl: `https://media.githubusercontent.com/media/microsoft/fluentui-emoji-animated/${FLUENT_ANIMATED_COMMIT}/assets`,
+    extension: "png",
+    visibility: "public",
+    version: FLUENT_ANIMATED_COMMIT,
+    source: "https://github.com/microsoft/fluentui-emoji-animated",
+    supports: (data) => fluentAnimatedFilename(data) !== null,
+    filename: (data) => fluentAnimatedFilename(data) ?? "unsupported",
+    license: {
+      name: "MIT",
+      url: `https://github.com/microsoft/fluentui-emoji-animated/blob/${FLUENT_ANIMATED_COMMIT}/LICENSE`,
+      attribution: "Fluent Emoji Animated by Microsoft",
+    },
+  }),
   fluent3d: createCdnProvider({
     id: "fluent-3d",
     label: "Fluent Emoji 3D",
@@ -171,8 +223,32 @@ export const publicProviders = {
   } satisfies EmojiAssetProvider,
 } as const;
 
+/**
+ * Licensed providers whose upstream delivery is intentionally rolling.
+ * Keep these separate from `publicProviders` so production consumers can opt in.
+ */
+export const experimentalProviders = {
+  notoAnimated: createCdnProvider({
+    id: "noto-animated",
+    label: "Noto Animated",
+    baseUrl: "https://fonts.gstatic.com/s/e/notoemoji/latest",
+    extension: "webp",
+    format: "webp",
+    visibility: "public",
+    version: "rolling-latest",
+    source: "https://googlefonts.github.io/noto-emoji-animation/",
+    filename: (data) => `${data.codepoint.toLowerCase().replace(/-/g, "_")}/512`,
+    license: {
+      name: "CC BY 4.0",
+      url: "https://creativecommons.org/licenses/by/4.0/",
+      attribution: "Noto Animated Emoji by Google and contributors",
+    },
+  }),
+} as const;
+
 /** Built-in providers with documented redistribution terms. */
 export const providers: Record<EmojiStyle, EmojiAssetProvider> = {
+  "fluent-animated": publicProviders.fluentAnimated,
   "fluent-3d": publicProviders.fluent3d,
   "fluent-color": publicProviders.fluentColor,
   "fluent-flat": publicProviders.fluentFlat,

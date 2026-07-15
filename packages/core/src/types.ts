@@ -1,4 +1,5 @@
 export type EmojiStyle =
+  | "fluent-animated"
   | "fluent-3d"
   | "fluent-color"
   | "fluent-flat"

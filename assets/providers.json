@@ -7,6 +7,14 @@
     "source": "https://github.com/microsoft/fluentui-emoji",
     "licenseUrl": "https://github.com/microsoft/fluentui-emoji/blob/main/LICENSE"
   },
+  "fluentAnimated": {
+    "version": "daa0365c09795789ed2bc6e8b228c97736cb6669",
+    "baseUrl": "https://media.githubusercontent.com/media/microsoft/fluentui-emoji-animated/daa0365c09795789ed2bc6e8b228c97736cb6669/assets",
+    "extension": "png",
+    "license": "MIT",
+    "source": "https://github.com/microsoft/fluentui-emoji-animated",
+    "licenseUrl": "https://github.com/microsoft/fluentui-emoji-animated/blob/daa0365c09795789ed2bc6e8b228c97736cb6669/LICENSE"
+  },
   "noto": {
     "version": "8998f5dd683424a73e2314a8c1f1e359c19e8742",
     "baseUrl": "https://cdn.jsdelivr.net/gh/googlefonts/noto-emoji@8998f5dd683424a73e2314a8c1f1e359c19e8742/png/128",
@@ -14,6 +22,15 @@
     "license": "Apache-2.0",
     "source": "https://github.com/googlefonts/noto-emoji",
     "licenseUrl": "https://github.com/googlefonts/noto-emoji/blob/main/LICENSE"
+  },
+  "notoAnimated": {
+    "version": "rolling-latest",
+    "baseUrl": "https://fonts.gstatic.com/s/e/notoemoji/latest",
+    "extension": "webp",
+    "license": "CC-BY-4.0",
+    "source": "https://googlefonts.github.io/noto-emoji-animation/",
+    "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+    "experimental": true
   },
   "twemoji": {
     "version": "15.1.0",
