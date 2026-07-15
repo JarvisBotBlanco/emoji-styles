@@ -34,6 +34,7 @@ Every built-in image provider uses artwork with documented redistribution terms 
 - ✅ **Provider system (`EmojiProvider`)** — set a default provider at the app level, override per-emoji
 - ✅ **Semantic asset mappings** — turn selected emoji into product icons with automatic provider fallback
 - ✅ **Automatic text rendering (`<EmojiText>`)** — transform complete strings, including ZWJ and skin-tone sequences
+- ✅ **Unicode Emoji 17.0 data** — 3,953 RGI entries, canonical aliases, and complete sequence metadata from the official Unicode dataset
 - ✅ **Framework-agnostic core** — URL generation, emoji data, and fallback logic work in Vue, Svelte, Angular, or vanilla JS
 - ✅ **Self-hosted Twemoji assets** — bundle Twemoji PNGs with your app, no CDN dependency
 - ✅ **TypeScript strict mode** — full type safety across all packages
@@ -298,7 +299,7 @@ import { getEmojiUrl, hasEmoji, getEmojiData, getAvailableEmojis, tokenizeEmojiT
 
 getEmojiUrl("🚀", "twemoji");          // "https://cdn.jsdelivr.net/.../1f680.png"
 hasEmoji("🚀");                         // true
-getEmojiData("🚀");                     // { unicode, name, ... }
+getEmojiData("🚀");                     // { name, alt, codepoint, codepoints, ... }
 getAvailableEmojis();                   // All mapped emoji entries
 tokenizeEmojiText("Ship 🚀 now");       // Text/emoji tokens for any framework
 ```
@@ -308,6 +309,7 @@ tokenizeEmojiText("Ship 🚀 now");       // Text/emoji tokens for any framework
 | Package | Purpose |
 | --- | --- |
 | [`emoji-styles`](./packages/core) | Framework-agnostic: URL generation, emoji data, provider abstraction, fallback logic |
+| [`emoji-styles-data`](./packages/data) | Versioned Unicode 17.0 / CLDR 48 RGI metadata and normalization aliases |
 | [`react-emoji-styles`](./packages/react) | React: `<Emoji>`, `<EmojiText>`, `<EmojiProvider>`, `<EmojiGrid>`, `useEmoji` hook |
 | [`emoji-styles-assets-twemoji`](./packages/assets-twemoji) | Self-hosted Twemoji PNG assets with local provider |
 
