@@ -6,7 +6,7 @@
  *
  * Strategy:
  * 1. Download emoji-datasource (Unicode CLDR metadata)
- * 2. For each emoji, try multiple CDN filename patterns
+ * 2. For each emoji, validate the canonical Noto filename
  * 3. Validate which URLs actually work (HTTP 200)
  * 4. Generate data.ts with only confirmed-working emojis
  *
@@ -54,40 +54,6 @@ async function checkUrl(url: string): Promise<boolean> {
     urlCache.set(url, false);
     return false;
   }
-}
-
-// ─── CDN filename candidate generation ───
-function generateCandidates(entry: EmojiDatasourceEntry): string[] {
-  const unified = entry.unified.split("-")[0].toLowerCase();
-  const candidates: string[] = [];
-
-  // Pattern 1: short_name with underscores → hyphens
-  candidates.push(entry.short_name.replace(/_/g, "-") + "_" + unified);
-
-  // Pattern 2: all short_names variants
-  for (const sn of entry.short_names) {
-    const c = sn.replace(/_/g, "-") + "_" + unified;
-    if (!candidates.includes(c)) candidates.push(c);
-  }
-
-  // Pattern 3: Unicode name → lowercase, spaces/special → hyphens
-  const nameSlug = entry.name
-    .toLowerCase()
-    .replace(/[:\u2019\u2018\u201C\u201D\uFE0F]/g, "")
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-|-$/g, "");
-  const nameCandidate = nameSlug + "_" + unified;
-  if (!candidates.includes(nameCandidate)) candidates.push(nameCandidate);
-
-  // Pattern 4: Remove "face" prefix/suffix variations
-  // e.g. "grinning-face-with-big-eyes" → "grinning-face"
-  if (nameSlug.includes("face")) {
-    const simplified = nameSlug.replace(/-with-.*$/, "").replace(/-face$/, "-face");
-    const sc = simplified + "_" + unified;
-    if (!candidates.includes(sc)) candidates.push(sc);
-  }
-
-  return candidates;
 }
 
 // ─── Unicode helpers ───
@@ -170,7 +136,7 @@ async function main() {
 
   // Filter
   const filtered = raw.filter(e => {
-    if (!e.has_img_apple) return false;
+    if (!e.has_img_google) return false;
     if (e.subcategory === "keycap") return false;
     if (e.category === "Flags") return false;
     if (e.category === "Component") return false;
@@ -197,9 +163,9 @@ async function main() {
     }
     console.log(`   Using ${valid.length} known emojis`);
   } else {
-    // Validate mode: test URLs
-    console.log("\n🔍 Validating CDN URLs...");
-    const CDN = "https://em-content.zobj.net/source/microsoft-teams/400";
+    // Validate mode: test immutable, officially licensed Noto assets.
+    console.log("\n🔍 Validating Noto Emoji URLs...");
+    const CDN = "https://cdn.jsdelivr.net/gh/googlefonts/noto-emoji@8998f5dd683424a73e2314a8c1f1e359c19e8742/png/128";
 
     for (let i = 0; i < toProcess.length; i++) {
       const entry = toProcess[i];
@@ -208,22 +174,16 @@ async function main() {
 
       if (!char) continue;
 
-      const candidates = generateCandidates(entry);
-      let found = false;
-
-      for (const candidate of candidates) {
-        const url = `${CDN}/${candidate}.png`;
-        if (await checkUrl(url)) {
-          valid.push({
-            char,
-            name: candidate,
-            alt: entry.name.charAt(0) + entry.name.slice(1).toLowerCase(),
-            codepoint: unified,
-            category: entry.category,
-          });
-          found = true;
-          break;
-        }
+      const notoFilename = `emoji_u${entry.unified.toLowerCase().replace(/-fe0f/g, "").replace(/-/g, "_")}`;
+      const url = `${CDN}/${notoFilename}.png`;
+      if (await checkUrl(url)) {
+        valid.push({
+          char,
+          name: `${entry.short_name.replace(/_/g, "-")}_${unified}`,
+          alt: entry.name.charAt(0) + entry.name.slice(1).toLowerCase(),
+          codepoint: entry.unified.toLowerCase(),
+          category: entry.category,
+        });
       }
 
       if ((i + 1) % 20 === 0) {
@@ -243,7 +203,7 @@ async function main() {
 
   let output = `import type { EmojiData } from "./types";\n\n`;
   output += `/**\n * Auto-generated emoji data mapping.\n`;
-  output += ` * Source: emoji-datasource (Unicode CLDR) + em-content.zobj.net CDN\n`;
+  output += ` * Source: emoji-datasource (Unicode CLDR), validated against Noto Emoji\n`;
   output += ` * Generated: ${new Date().toISOString().split("T")[0]}\n`;
   output += ` * Count: ${valid.length} emojis\n`;
   output += ` *\n`;

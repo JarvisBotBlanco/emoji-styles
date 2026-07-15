@@ -1,4 +1,20 @@
 {
+  "fluent": {
+    "version": "62ecdc0d7ca5c6df32148c169556bc8d3782fca4",
+    "baseUrl": "https://cdn.jsdelivr.net/gh/microsoft/fluentui-emoji@62ecdc0d7ca5c6df32148c169556bc8d3782fca4/assets",
+    "formats": ["png", "svg"],
+    "license": "MIT",
+    "source": "https://github.com/microsoft/fluentui-emoji",
+    "licenseUrl": "https://github.com/microsoft/fluentui-emoji/blob/main/LICENSE"
+  },
+  "noto": {
+    "version": "8998f5dd683424a73e2314a8c1f1e359c19e8742",
+    "baseUrl": "https://cdn.jsdelivr.net/gh/googlefonts/noto-emoji@8998f5dd683424a73e2314a8c1f1e359c19e8742/png/128",
+    "extension": "png",
+    "license": "Apache-2.0",
+    "source": "https://github.com/googlefonts/noto-emoji",
+    "licenseUrl": "https://github.com/googlefonts/noto-emoji/blob/main/LICENSE"
+  },
   "twemoji": {
     "version": "15.1.0",
     "outputDirectory": "packages/assets-twemoji/public/emoji/twemoji/15.1.0",

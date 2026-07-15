@@ -2,7 +2,7 @@ import type { EmojiData } from "./types";
 
 /**
  * Auto-generated emoji data mapping.
- * Source: emoji-datasource (Unicode CLDR) + em-content.zobj.net CDN
+ * Source: emoji-datasource (Unicode CLDR), validated against Noto Emoji
  * Generated: 2026-07-12
  * Count: 891 emojis
  *

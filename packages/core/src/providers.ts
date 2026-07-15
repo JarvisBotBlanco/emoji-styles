@@ -5,6 +5,7 @@ import type {
   ProviderLicense,
   ProviderVisibility,
 } from "./types";
+import { fluentAssetNames } from "./fluent-data";
 
 export interface CdnProviderOptions {
   id: string;
@@ -29,8 +30,75 @@ export function createCdnProvider(options: CdnProviderOptions): EmojiAssetProvid
   };
 }
 
+const FLUENT_COMMIT = "62ecdc0d7ca5c6df32148c169556bc8d3782fca4";
+const NOTO_COMMIT = "8998f5dd683424a73e2314a8c1f1e359c19e8742";
+
+function fluentFilename(data: EmojiData, style: "3D" | "Color" | "Flat") {
+  const codepoint = data.codepoint.toLowerCase().replace(/-fe0f/g, "");
+  const mapped = fluentAssetNames[codepoint];
+  const folder = mapped?.[0] ?? data.alt;
+  const slug = mapped?.[1] ?? data.alt
+    .toLowerCase()
+    .replace(/[’']/g, "")
+    .replace(/[^a-z0-9]+/g, "_")
+    .replace(/^_|_$/g, "");
+  return `${encodeURIComponent(folder)}/${style}/${slug}_${style.toLowerCase()}`;
+}
+
 /** Providers whose artwork has an explicit redistribution license. */
 export const publicProviders = {
+  fluent3d: createCdnProvider({
+    id: "fluent-3d",
+    label: "Fluent Emoji 3D",
+    baseUrl: `https://cdn.jsdelivr.net/gh/microsoft/fluentui-emoji@${FLUENT_COMMIT}/assets`,
+    extension: "png",
+    visibility: "public",
+    filename: (data) => fluentFilename(data, "3D"),
+    license: {
+      name: "MIT",
+      url: "https://github.com/microsoft/fluentui-emoji/blob/main/LICENSE",
+      attribution: "Fluent Emoji by Microsoft",
+    },
+  }),
+  fluentColor: createCdnProvider({
+    id: "fluent-color",
+    label: "Fluent Emoji Color",
+    baseUrl: `https://cdn.jsdelivr.net/gh/microsoft/fluentui-emoji@${FLUENT_COMMIT}/assets`,
+    extension: "svg",
+    visibility: "public",
+    filename: (data) => fluentFilename(data, "Color"),
+    license: {
+      name: "MIT",
+      url: "https://github.com/microsoft/fluentui-emoji/blob/main/LICENSE",
+      attribution: "Fluent Emoji by Microsoft",
+    },
+  }),
+  fluentFlat: createCdnProvider({
+    id: "fluent-flat",
+    label: "Fluent Emoji Flat",
+    baseUrl: `https://cdn.jsdelivr.net/gh/microsoft/fluentui-emoji@${FLUENT_COMMIT}/assets`,
+    extension: "svg",
+    visibility: "public",
+    filename: (data) => fluentFilename(data, "Flat"),
+    license: {
+      name: "MIT",
+      url: "https://github.com/microsoft/fluentui-emoji/blob/main/LICENSE",
+      attribution: "Fluent Emoji by Microsoft",
+    },
+  }),
+  noto: createCdnProvider({
+    id: "noto",
+    label: "Noto Emoji",
+    baseUrl: `https://cdn.jsdelivr.net/gh/googlefonts/noto-emoji@${NOTO_COMMIT}/png/128`,
+    extension: "png",
+    visibility: "public",
+    filename: (data) => `emoji_u${data.codepoint.replace(/-fe0f/gi, "").replace(/-/g, "_")}`,
+    license: {
+      name: "Apache-2.0",
+      url: "https://github.com/googlefonts/noto-emoji",
+      attribution: "Noto Emoji by Google and contributors",
+    },
+  }),
   twemoji: createCdnProvider({
     id: "twemoji",
     label: "Twemoji",
@@ -44,34 +112,22 @@ export const publicProviders = {
       attribution: "Twemoji graphics by Twitter and contributors",
     },
   }),
+  native: {
+    id: "native",
+    label: "Native Unicode",
+    visibility: "public",
+    getUrl: () => null,
+  } satisfies EmojiAssetProvider,
 } as const;
 
-/**
- * Internal evaluation providers. Their presence is not a grant of artwork rights.
- * Do not expose these from a public package without a separate license review.
- */
-export const experimentalProviders = {
-  "microsoft-teams": createCdnProvider({
-    id: "microsoft-teams", label: "Microsoft Teams 3D", baseUrl: "https://em-content.zobj.net/source/microsoft-teams/400", extension: "png", visibility: "experimental",
-  }),
-  apple: createCdnProvider({
-    id: "apple", label: "Apple", baseUrl: "https://em-content.zobj.net/source/apple/453", extension: "png", visibility: "experimental",
-  }),
-  google: createCdnProvider({
-    id: "google", label: "Google", baseUrl: "https://em-content.zobj.net/source/google/350", extension: "png", visibility: "experimental",
-  }),
-  samsung: createCdnProvider({
-    id: "samsung", label: "Samsung", baseUrl: "https://em-content.zobj.net/source/samsung/320", extension: "png", visibility: "experimental",
-  }),
-  animated: createCdnProvider({
-    id: "animated", label: "Animated Noto", baseUrl: "https://em-content.zobj.net/source/animated-noto-color-emoji/461", extension: "gif", visibility: "experimental",
-  }),
-} as const;
-
-/** Full internal catalog. Prefer publicProviders in distributable code. */
+/** Built-in providers with documented redistribution terms. */
 export const providers: Record<EmojiStyle, EmojiAssetProvider> = {
-  ...experimentalProviders,
-  ...publicProviders,
+  "fluent-3d": publicProviders.fluent3d,
+  "fluent-color": publicProviders.fluentColor,
+  "fluent-flat": publicProviders.fluentFlat,
+  noto: publicProviders.noto,
+  twemoji: publicProviders.twemoji,
+  native: publicProviders.native,
 };
 
 export const SIZE_MAP: Record<string, number> = {
