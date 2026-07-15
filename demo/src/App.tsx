@@ -96,136 +96,55 @@ const FRAMEWORK_EXAMPLES = [
   {
     id: "react",
     label: "React",
-    previewEmoji: "🚀",
     code: `import { Emoji, EmojiProvider, providers } from 'react-emoji-styles';
 
-function App() {
-  return (
-    <EmojiProvider provider={providers.apple}>
-      {/* Single emoji */}
-      <Emoji emoji="🚀" size="lg" />
-
-      {/* All supported sizes */}
-      <Emoji emoji="🎉" size="xs" />  {/* 12px */}
-      <Emoji emoji="🎉" size="sm" />  {/* 16px */}
-      <Emoji emoji="🎉" size="md" />  {/* 20px */}
-      <Emoji emoji="🎉" size="xl" />  {/* 32px */}
-      <Emoji emoji="🎉" size="2xl" /> {/* 40px */}
-
-      {/* Override provider per emoji */}
-      <Emoji
-        emoji="🔥"
-        provider={providers.google}
-        size="2xl"
-      />
-    </EmojiProvider>
-  );
-}`,
+<EmojiProvider provider={providers.apple}>
+  <Emoji emoji="🚀" size="lg" />
+</EmojiProvider>`,
   },
   {
     id: "vue",
     label: "Vue",
-    previewEmoji: "⚡",
     code: `<template>
   <EmojiProvider :provider="appleProvider">
-    <!-- Single emoji -->
     <Emoji emoji="🚀" size="lg" />
-
-    <!-- Dynamic emoji binding -->
-    <Emoji
-      :emoji="selectedEmoji"
-      :size="emojiSize"
-    />
-
-    <!-- Provider override -->
-    <Emoji
-      emoji="🔥"
-      :provider="googleProvider"
-      size="2xl"
-    />
   </EmojiProvider>
 </template>
 
 <script setup>
 import { Emoji, EmojiProvider } from 'react-emoji-styles/vue';
 import { providers } from 'react-emoji-styles';
-
 const appleProvider = providers.apple;
-const googleProvider = providers.google;
-const selectedEmoji = ref('🎉');
-const emojiSize = ref('xl');
 </script>`,
   },
   {
     id: "svelte",
     label: "Svelte",
-    previewEmoji: "🎨",
     code: `<script>
   import { Emoji, EmojiProvider } from 'react-emoji-styles/svelte';
   import { providers } from 'react-emoji-styles';
-
-  let emoji = $state('🚀');
-  let size = $state('xl');
 </script>
 
 <EmojiProvider provider={providers.apple}>
-  <!-- Single emoji -->
-  <Emoji {emoji} {size} />
-
-  <!-- With provider override -->
-  <Emoji
-    emoji="🔥"
-    provider={providers.google}
-    size="2xl"
-  />
-
-  <!-- Reactive binding -->
-  <select bind:value={emoji}>
-    <option>🚀</option>
-    <option>❤️</option>
-    <option>🔥</option>
-  </select>
+  <Emoji emoji="🚀" size="lg" />
 </EmojiProvider>`,
   },
   {
     id: "angular",
     label: "Angular",
-    previewEmoji: "💎",
     code: `// component.ts
-import { Component } from '@angular/core';
 import { EmojiModule } from 'react-emoji-styles/angular';
 import { providers } from 'react-emoji-styles';
 
 @Component({
-  selector: 'app-root',
   standalone: true,
   imports: [EmojiModule],
   template: \`
     <emoji-provider [provider]="appleProvider">
-      <!-- Single emoji -->
       <emoji emoji="🚀" size="lg"></emoji>
-
-      <!-- Provider override -->
-      <emoji
-        emoji="🔥"
-        [provider]="googleProvider"
-        size="2xl"
-      ></emoji>
-
-      <!-- Dynamic binding -->
-      <emoji
-        [emoji]="selectedEmoji"
-        [size]="emojiSize"
-      ></emoji>
     </emoji-provider>
   \`,
-})
-export class AppComponent {
-  appleProvider = providers.apple;
-  googleProvider = providers.google;
-  selectedEmoji = '🎉';
-  emojiSize = 'xl';
-}`,
+})`,
   },
 ];
 
@@ -621,12 +540,19 @@ export default function App() {
               </button>
             ))}
           </div>
-          <div className="framework-example">
-            <div className="framework-preview">
-              <span className="framework-preview-emoji">
-                <Emoji emoji={activeExample.previewEmoji} size={48} />
-              </span>
-              <span className="framework-preview-label">Live preview</span>
+          <div className="framework-content">
+            <div className="vs-comparison">
+              <div className="vs-box">
+                <span className="vs-label">Native</span>
+                <span className="vs-emoji" style={{fontSize: '48px', lineHeight: 1}}>🚀</span>
+              </div>
+              <div className="vs-badge">VS</div>
+              <div className="vs-box">
+                <span className="vs-label">emoji-styles</span>
+                <span className="vs-emoji">
+                  <Emoji emoji="🚀" size={48} />
+                </span>
+              </div>
             </div>
             <div className="code-block">
               <div className="code-header">

@@ -490,46 +490,76 @@ a:focus-visible {
   color: #0f2f2b;
 }
 
-/* ─── Framework Example ─── */
+/* ─── Framework Content (VS Comparison) ─── */
 
-.framework-example {
+.framework-content {
   display: grid;
-  grid-template-columns: 180px 1fr;
+  grid-template-columns: 280px 1fr;
   gap: 16px;
   align-items: start;
 }
 
-.framework-preview {
+.vs-comparison {
   display: flex;
-  flex-direction: column;
   align-items: center;
-  justify-content: center;
-  gap: 12px;
-  padding: 32px 20px;
+  gap: 10px;
+  padding: 20px 16px;
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius);
-  min-height: 200px;
+  transition: border-color var(--transition);
 }
 
-.framework-preview-emoji {
+.vs-comparison:hover {
+  border-color: var(--primary);
+}
+
+.vs-box {
+  flex: 1;
   display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-content: center;
-  animation: pulse-subtle 3s ease-in-out infinite;
+  gap: 10px;
+  padding: 20px 8px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  transition: border-color var(--transition);
 }
 
-@keyframes pulse-subtle {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.05); }
+.vs-box:last-child {
+  border-color: var(--primary-muted);
 }
 
-.framework-preview-label {
-  font-size: 11px;
+.vs-label {
+  font-size: 10px;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.06em;
-  color: var(--text-dim);
+  color: var(--text-muted);
+}
+
+.vs-emoji {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 56px;
+  line-height: 1;
+}
+
+.vs-badge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--primary-muted);
+  color: var(--primary);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  flex-shrink: 0;
 }
 
 /* ─── Code Block ─── */
@@ -1235,17 +1265,8 @@ a:focus-visible {
     grid-template-columns: 1fr;
   }
 
-  .framework-example {
+  .framework-content {
     grid-template-columns: 1fr;
-  }
-
-  .framework-preview {
-    min-height: 120px;
-    padding: 24px 16px;
-  }
-
-  .framework-preview-emojis {
-    flex-direction: row;
   }
 
   .install-card {
