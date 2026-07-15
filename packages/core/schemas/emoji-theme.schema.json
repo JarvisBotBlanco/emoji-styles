@@ -1,0 +1,93 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://emoji.style/schemas/emoji-theme.schema.json",
+  "title": "Emoji Styles semantic theme",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "id", "version", "tokens"],
+  "properties": {
+    "$schema": { "type": "string" },
+    "schemaVersion": { "const": 1 },
+    "id": { "type": "string", "pattern": "^[a-z0-9]+(?:[._-][a-z0-9]+)*$" },
+    "version": { "type": "string", "pattern": "^\\d+\\.\\d+\\.\\d+(?:-[0-9A-Za-z.-]+)?$" },
+    "defaultProvider": { "$ref": "#/$defs/providerRef" },
+    "fallbacks": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/providerRef" }
+    },
+    "inherits": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": { "type": "string", "pattern": "^[a-z0-9]+(?:[._-][a-z0-9]+)*$" }
+    },
+    "tokens": {
+      "type": "object",
+      "propertyNames": { "pattern": "^[a-z][a-z0-9]*(?:\\.[a-z][a-z0-9]*)+$" },
+      "additionalProperties": { "$ref": "#/$defs/token" }
+    }
+  },
+  "$defs": {
+    "providerRef": {
+      "type": "string",
+      "pattern": "^[a-z0-9]+(?:[._-][a-z0-9]+)*$"
+    },
+    "license": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name"],
+      "properties": {
+        "name": { "type": "string", "minLength": 1 },
+        "url": { "type": "string" },
+        "attribution": { "type": "string" },
+        "ownership": { "type": "string" }
+      }
+    },
+    "asset": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["url", "format"],
+      "properties": {
+        "url": {
+          "type": "string",
+          "minLength": 1,
+          "allOf": [
+            { "not": { "pattern": "^(?!(?:https?):)[a-zA-Z][a-zA-Z0-9+.-]*:" } },
+            { "not": { "pattern": "^//" } },
+            { "not": { "pattern": "\\\\" } },
+            { "not": { "pattern": "(?:^|/)\\.\\.(?:/|[?#]|$)" } }
+          ]
+        },
+        "format": { "enum": ["png", "svg", "webp", "avif"] },
+        "local": { "type": "boolean" },
+        "providerId": { "type": "string" },
+        "providerVersion": { "type": "string" },
+        "width": { "type": "integer", "minimum": 1 },
+        "height": { "type": "integer", "minimum": 1 },
+        "checksum": { "type": "string", "pattern": "^[a-fA-F0-9]{64}$" },
+        "license": { "$ref": "#/$defs/license" }
+      }
+    },
+    "token": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["emoji", "label", "decorative"],
+      "properties": {
+        "emoji": { "type": "string", "minLength": 1 },
+        "label": { "type": "string", "minLength": 1 },
+        "decorative": { "type": "boolean" },
+        "labels": {
+          "type": "object",
+          "propertyNames": { "pattern": "^[a-zA-Z]{2,3}(?:-[a-zA-Z0-9]{2,8})*$" },
+          "additionalProperties": { "type": "string", "minLength": 1 }
+        },
+        "provider": { "$ref": "#/$defs/providerRef" },
+        "asset": {
+          "oneOf": [
+            { "type": "string", "pattern": "^[a-z][a-z0-9]*(?:\\.[a-z][a-z0-9]*)+$" },
+            { "$ref": "#/$defs/asset" }
+          ]
+        }
+      }
+    }
+  }
+}
