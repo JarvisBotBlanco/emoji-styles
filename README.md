@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="./demo/public/favicon.svg" alt="Emoji Styles" width="72" height="72" />
+<img src="./demo/src/assets/favicon.svg" alt="Emoji Styles" width="72" height="72" />
 
 # Emoji Styles
 
@@ -12,7 +12,7 @@ A typed, multi-provider emoji toolkit for React with smart fallbacks, lazy loadi
 [![CI](https://github.com/Blancochuy/emoji-styles/actions/workflows/ci.yml/badge.svg)](https://github.com/Blancochuy/emoji-styles/actions/workflows/ci.yml)
 [![TypeScript](https://img.shields.io/badge/TypeScript-strict-3178c6?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 
-[Quick start](#quick-start) · [Features](#features) · [Providers](#providers) · [Manifests](./docs/PROVIDER_MANIFESTS.md) · [AI agents](#why-ai-agents-benefit) · [API](#api-reference) · [Build Week](./docs/BUILD_WEEK.md) · [Development](#development)
+[Quick start](#quick-start) · [Features](#features) · [Providers](#providers) · [Semantic tokens](./docs/SEMANTIC_TOKENS.md) · [Manifests](./docs/PROVIDER_MANIFESTS.md) · [AI agents](#why-ai-agents-benefit) · [API](#api-reference) · [Build Week](./docs/BUILD_WEEK.md) · [Development](#development)
 
 </div>
 
@@ -32,7 +32,7 @@ Every built-in image provider uses artwork with documented redistribution terms 
 - ✅ **React component (`<Emoji>`)** — drop-in component with props for provider, size, alt text, and lazy loading
 - ✅ **Hooks (`useEmoji`)** — get emoji URLs and metadata for custom UI
 - ✅ **Provider system (`EmojiProvider`)** — set a default provider at the app level, override per-emoji
-- ✅ **Semantic asset mappings** — turn selected emoji into product icons with automatic provider fallback
+- ✅ **Versioned semantic themes** — map stable product intent to localized, accessible emoji or custom icons
 - ✅ **Automatic text rendering (`<EmojiText>`)** — transform complete strings, including ZWJ and skin-tone sequences
 - ✅ **Unicode Emoji 17.0 data** — 3,953 RGI entries, canonical aliases, and complete sequence metadata from the official Unicode dataset
 - ✅ **Framework-agnostic core** — URL generation, emoji data, and fallback logic work in Vue, Svelte, Angular, or vanilla JS
@@ -92,6 +92,42 @@ import { Emoji, EmojiProvider, publicProviders } from "react-emoji-styles";
 ```
 
 ## Advanced Usage
+
+### Name intent with semantic tokens
+
+Keep interface meaning stable while themes control the Unicode fallback, provider, localization, or exact product asset:
+
+```tsx
+import {
+  EmojiProvider,
+  EmojiToken,
+  defineEmojiTheme,
+  publicProviders,
+} from "react-emoji-styles";
+
+const productTheme = defineEmojiTheme({
+  "status.success": {
+    emoji: "✅",
+    label: "Operation succeeded",
+    labels: { es: "Operación exitosa" },
+  },
+  "action.deploy": {
+    emoji: "🚀",
+    label: "Deploy application",
+    asset: { url: "/icons/deploy.svg", format: "svg" },
+  },
+}, {
+  id: "product",
+  version: "1.0.0",
+  defaultProvider: publicProviders.fluent3d,
+});
+
+<EmojiProvider theme={productTheme} locale="es">
+  <EmojiToken token="action.deploy" size="lg" />
+</EmojiProvider>
+```
+
+Themes support inheritance, composition, provider registries, JSON/TypeScript serialization, schema validation, and schema-less v0 migration. See [Semantic emoji tokens](./docs/SEMANTIC_TOKENS.md).
 
 ### Turn emoji into product icons
 
@@ -199,12 +235,13 @@ AI-generated UI is more reliable when visual output is explicit instead of depen
 
 - **Deterministic screenshots and tests** — pin an image provider so macOS, Linux CI, and a judge's browser produce the same artwork.
 - **One safe API surface** — agents choose a documented provider instead of inventing brittle vendor URLs.
+- **Stable product vocabulary** — agents can emit `action.deploy` or `status.warning` without choosing artwork or rewriting accessibility labels.
 - **Accessible fallback** — the original Unicode character remains available when an asset fails.
 - **Local-first delivery** — use the Twemoji asset package for private networks, offline demos, or strict content-security policies.
 
 ```tsx
-<EmojiProvider provider={publicProviders.fluent3d}>
-  <Emoji emoji="🚀" alt="Launch" />
+<EmojiProvider theme={productTheme}>
+  <EmojiToken token="action.deploy" />
 </EmojiProvider>
 ```
 
@@ -301,6 +338,20 @@ export class EmojiComponent {
 | `getAlt` | `(emoji) => string` | CLDR label | Customize accessible labels |
 | `renderEmoji` | `(emoji, fallback, index) => ReactNode` | default renderer | Replace selected emoji with React components |
 
+### `<EmojiToken>` Component
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `token` | `string` | *(required)* | Semantic token such as `action.deploy` |
+| `theme` | `EmojiTheme` | context theme | Versioned theme containing the token |
+| `provider` | `EmojiThemeProviderRef` | token/theme provider | Override asset resolution |
+| `locale` | `string` | context locale | Resolve a localized accessible label |
+| `label` | `string` | theme label | Override the accessible label |
+| `decorative` | `boolean` | theme definition | Hide decorative output from assistive technology |
+| `size` | `EmojiSize` | `"md"` | Rendered dimensions |
+
+`useEmojiToken` returns the definition, structured resolution, loading state, and error. `useEmojiTheme` reads the active theme context.
+
 ### `useEmoji` Hook
 
 ```ts
@@ -319,6 +370,7 @@ import {
   getEmojiUrl,
   getProviderCoverage,
   isEmoji,
+  resolveEmojiToken,
   resolveEmoji,
   tokenizeEmojiText,
 } from "emoji-styles";
@@ -328,6 +380,7 @@ isEmoji("👨‍💻");                       // true
 getEmojiMetadata("🚀");                // normalized sequence and Unicode metadata
 await resolveEmoji("🚀", { provider: "twemoji" });
 await getProviderCoverage("twemoji");  // coverage for the bundled Unicode dataset
+await resolveEmojiToken("action.deploy", productTheme);
 tokenizeEmojiText("Ship 🚀 now");       // Text/emoji tokens for any framework
 ```
 
@@ -337,9 +390,9 @@ The synchronous `getEmojiUrl`, `hasEmoji`, `getEmojiData`, and `getAvailableEmoj
 
 | Package | Purpose |
 | --- | --- |
-| [`emoji-styles`](./packages/core) | Framework-agnostic: URL generation, emoji data, provider abstraction, fallback logic |
+| [`emoji-styles`](./packages/core) | Framework-agnostic: resolution, semantic themes, schemas, Unicode data, providers, and fallbacks |
 | [`emoji-styles-data`](./packages/data) | Versioned Unicode 17.0 / CLDR 48 RGI metadata and normalization aliases |
-| [`react-emoji-styles`](./packages/react) | React: `<Emoji>`, `<EmojiText>`, `<EmojiProvider>`, `<EmojiGrid>`, `useEmoji` hook |
+| [`react-emoji-styles`](./packages/react) | React: `<Emoji>`, `<EmojiToken>`, `<EmojiText>`, providers, grids, and hooks |
 | [`emoji-styles-assets-twemoji`](./packages/assets-twemoji) | Self-hosted Twemoji PNG assets with local provider |
 
 ## Supported platforms

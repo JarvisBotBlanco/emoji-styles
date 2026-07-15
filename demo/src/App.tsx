@@ -1,9 +1,9 @@
 import { useState, useMemo, useCallback, useRef, useEffect } from "react";
 import {
   Emoji,
-  EmojiText,
+  EmojiToken,
   EmojiProvider,
-  createMappedProvider,
+  defineEmojiTheme,
   getAvailableEmojis,
   getEmojiData,
   providers,
@@ -11,6 +11,7 @@ import {
 } from "react-emoji-styles";
 import type { EmojiAssetProvider, EmojiSize } from "react-emoji-styles";
 import { localTwemojiProvider } from "emoji-styles-assets-twemoji";
+import deployIconUrl from "./assets/deploy.svg";
 
 // ─── Constants ───
 
@@ -37,11 +38,17 @@ const SIZES: SizeOption[] = [
 
 const EMOJI_BATCH_SIZE = 180;
 
-const PRODUCT_PROVIDER = createMappedProvider({
+const PRODUCT_THEME = defineEmojiTheme({
+  "action.deploy": {
+    emoji: "🚀",
+    label: "Deploy application",
+    asset: { url: deployIconUrl, format: "svg", local: true },
+  },
+}, {
   id: "product-language",
-  label: "Product icons",
-  assets: { "🚀": "/custom/deploy.svg" },
-  fallback: publicProviders.fluent3d,
+  version: "1.0.0",
+  defaultProvider: publicProviders.fluent3d,
+  fallbacks: [publicProviders.twemoji, publicProviders.native],
 });
 
 // ─── Framework code examples ───
@@ -538,18 +545,18 @@ export function Reaction() {
               <div className="agents-copy">
                 <span className="section-kicker">Semantic asset layer</span>
                 <h2>Turn emoji into your product language.</h2>
-                <p>Keep Unicode as the portable token, then resolve it to licensed emoji, brand artwork, or components from your design system. Humans and agents author the same simple text while the product controls the result.</p>
+                <p>Name the intent once, then resolve it to Unicode, licensed emoji, brand artwork, or components from your design system. Humans and agents use the same stable vocabulary while the product controls the result.</p>
                 <div className="agent-benefits">
-                  <div><strong>01</strong><span><b>Partial mappings</b> override only the emoji your product owns.</span></div>
-                  <div><strong>02</strong><span><b>Automatic text parsing</b> handles adjacent emoji, skin tones, and ZWJ sequences.</span></div>
-                  <div><strong>03</strong><span><b>Safe fallback chains</b> keep everything else complete and accessible.</span></div>
+                  <div><strong>01</strong><span><b>Semantic tokens</b> keep product intent separate from visual artwork.</span></div>
+                  <div><strong>02</strong><span><b>Versioned themes</b> compose brand overrides, locales, and generated assets.</span></div>
+                  <div><strong>03</strong><span><b>Unicode fallback</b> keeps every state portable and accessible.</span></div>
                 </div>
               </div>
               <div className="agent-console" aria-label="Agent-generated component example">
                 <div className="agent-console-bar"><span>agent / ui-task</span><i>verified</i></div>
-                <div className="agent-prompt"><span>›</span><p>Map 🚀 to our deploy icon. Keep every other emoji on Fluent.</p></div>
-                <pre><code>{highlightCode(`const product = createMappedProvider({\n  assets: { '🚀': '/icons/deploy.svg' },\n  fallback: publicProviders.fluent3d,\n});\n\n<EmojiText provider={product}>\n  Shipping now 🚀\n</EmojiText>`, "tsx")}</code></pre>
-                <div className="agent-result"><span>Output</span><EmojiText provider={PRODUCT_PROVIDER} size={56}>🚀</EmojiText><strong>unicode in · brand asset out</strong></div>
+                <div className="agent-prompt"><span>›</span><p>Use our deploy icon for action.deploy, with an accessible Unicode fallback.</p></div>
+                <pre><code>{highlightCode(`const product = defineEmojiTheme({\n  'action.deploy': {\n    emoji: '🚀',\n    label: 'Deploy application',\n    asset: { url: '/icons/deploy.svg', format: 'svg' },\n  },\n});\n\n<EmojiToken token="action.deploy" theme={product} />`, "tsx")}</code></pre>
+                <div className="agent-result"><span>Output</span><EmojiToken token="action.deploy" theme={PRODUCT_THEME} size={56} lazy={false} /><strong>intent in · brand asset out</strong></div>
               </div>
             </div>
           </section>
