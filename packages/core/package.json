@@ -13,7 +13,8 @@
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js"
     },
-    "./schema/provider": "./schemas/emoji-provider.schema.json"
+    "./schema/provider": "./schemas/emoji-provider.schema.json",
+    "./schema/theme": "./schemas/emoji-theme.schema.json"
   },
   "files": ["dist", "schemas"],
   "scripts": {

@@ -127,3 +127,17 @@ Completed on 2026-07-15 on branch `agent/core-provider-v2`:
 - Preserved the synchronous v1 API surface so existing integrations can migrate without a package rename or forced rewrite.
 
 The provider protocol deliberately separates convention-based addressability from verified coverage. A CDN formatter may know how a filename would be constructed, while a manifest provider can prove which exact assets were reviewed and shipped.
+
+## Phase 3 implementation record — semantic emoji themes
+
+Completed on 2026-07-15 on branch `agent/semantic-tokens-v1`:
+
+- Added versioned semantic themes so product intent such as `action.deploy` can resolve independently from Unicode characters, provider artwork, or exact custom assets.
+- Added accessible default and localized labels, decorative-state metadata, per-token providers, ordered fallbacks, inheritance, deterministic composition, and native Unicode fallback.
+- Added `defineEmojiTheme`, `validateEmojiTheme`, `mergeEmojiThemes`, `resolveEmojiToken`, `serializeEmojiTheme`, `parseEmojiTheme`, and schema-v0 migration APIs to the framework-agnostic core.
+- Added semantic asset providers for reviewed brand assets or generated artwork. Exact assets retain provider, version, dimensions, checksum, and license metadata without Emoji Styles inferring ownership.
+- Added a distributable JSON Schema with schema versioning and runtime-equivalent URL safety constraints.
+- Added React theme context, `EmojiToken`, `useEmojiToken`, and `useEmojiTheme`, including registries for loading serialized custom-provider references.
+- Updated the demo and documentation to show a semantic product-language workflow useful to both developers and AI agents. The demo uses a bundled custom deploy asset and an accessible Unicode/provider fallback.
+
+Phase 3 establishes the portable semantic contract. Deeper SSR, hydration, strict-CSP, and framework-adapter work remains in later phases rather than being implied by this initial React integration.

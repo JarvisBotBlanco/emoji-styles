@@ -7,6 +7,7 @@ export type { LegacyEmojiAssetProvider, LegacyProviderAdapterOptions } from "./l
 export type { EmojiProviderManifest, EmojiProviderManifestAsset, EmojiProviderGenerator, ManifestProviderOptions } from "./manifest-provider";
 export type { CompositeProviderOptions } from "./composite-provider";
 export type { EmojiTextToken } from "./tokenize";
+export type { EmojiThemeProviderRef, EmojiTokenAsset, EmojiTokenDefinitionInput, EmojiTokenDefinition, EmojiTokenMapInput, EmojiTokenMap, EmojiTheme, DefineEmojiThemeOptions, EmojiThemeValidationIssue, EmojiThemeValidationResult, ResolveEmojiTokenOptions, ResolvedEmojiToken, SemanticTokenResolveContext, SemanticTokenProvider, SemanticTokenProviderOptions, SerializeEmojiThemeOptions } from "./semantic-theme";
 export { providers, publicProviders, createCdnProvider, getTwemojiAssetId, SIZE_MAP } from "./providers";
 export { createMappedProvider } from "./mapped-provider";
 export { createManifestProvider, createGeneratedProvider, validateProviderManifest } from "./manifest-provider";
@@ -17,3 +18,4 @@ export { adaptLegacyProvider, isV2Provider } from "./legacy";
 export { emojiData, emojiDatasetInfo, normalizeEmoji, isRGIEmoji, toEmojiCodepointSequence } from "emoji-styles-data";
 export { getEmojiUrl, getFallbackChain, resolveProvider, hasEmoji, getAvailableEmojis, getEmojiData } from "./url";
 export { tokenizeEmojiText } from "./tokenize";
+export { EMOJI_THEME_SCHEMA_VERSION, EMOJI_TOKEN_NAME_PATTERN, defineEmojiTheme, validateEmojiTheme, mergeEmojiThemes, getEmojiTokenDefinition, getEmojiTokenLabel, resolveEmojiToken, createSemanticTokenProvider, serializeEmojiTheme, migrateEmojiTheme, parseEmojiTheme } from "./semantic-theme";
