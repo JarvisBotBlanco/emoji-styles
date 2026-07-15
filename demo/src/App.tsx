@@ -10,14 +10,15 @@ import {
   providers,
   publicProviders,
 } from "react-emoji-styles";
-import type { EmojiAssetProvider, EmojiSize } from "react-emoji-styles";
+import type { EmojiAssetProvider, EmojiMotion, EmojiSize } from "react-emoji-styles";
 import { localTwemojiProvider } from "emoji-styles-assets-twemoji";
 import deployIconUrl from "./assets/deploy.svg";
 
 // ─── Constants ───
 
-const STYLES: { key: string; label: string; emoji: string; provider: EmojiAssetProvider }[] = [
+const STYLES: { key: string; label: string; emoji: string; provider: EmojiAssetProvider; motion?: EmojiMotion }[] = [
   { key: "noto-animated", label: "Noto Animated", emoji: "▶", provider: experimentalProviders.notoAnimated },
+  { key: "fluent-3d-motion", label: "Fluent 3D + Motion", emoji: "↟", provider: publicProviders.fluent3d, motion: "bounce" },
   { key: "fluent-3d", label: "Fluent 3D", emoji: "◉", provider: publicProviders.fluent3d },
   { key: "fluent-color", label: "Fluent Color", emoji: "◐", provider: publicProviders.fluentColor },
   { key: "fluent-flat", label: "Fluent Flat", emoji: "◇", provider: publicProviders.fluentFlat },
@@ -401,6 +402,7 @@ export default function App() {
     ? "localTwemojiProvider"
     : ({
         "fluent-3d": "publicProviders.fluent3d",
+        "fluent-3d-motion": "publicProviders.fluent3d",
         "fluent-color": "publicProviders.fluentColor",
         "fluent-flat": "publicProviders.fluentFlat",
         "noto-animated": "experimentalProviders.notoAnimated",
@@ -413,6 +415,7 @@ export default function App() {
     : style === "noto-animated"
       ? `import { Emoji, experimentalProviders } from\n  'react-emoji-styles';`
       : `import { Emoji, publicProviders } from\n  'react-emoji-styles';`;
+  const motionProp = activeStyle.motion ? `\n      motion="${activeStyle.motion}"` : "";
   const playgroundCode = `${providerImport}
 
 export function Reaction() {
@@ -420,7 +423,7 @@ export function Reaction() {
     <Emoji
       emoji="${featuredEmoji}"
       provider={${providerCode}}
-      size="${size.label}"
+      size="${size.label}"${motionProp}
     />
   );
 }`;
@@ -476,7 +479,7 @@ export function Reaction() {
               <div className="orbit orbit-two" />
               <div className="hero-core">
                 <span className="core-pulse" />
-                <Emoji emoji={featuredEmoji} provider={activeStyle.provider} size={104} className="motion-float motion-hero" />
+                <Emoji emoji={featuredEmoji} provider={activeStyle.provider} size={104} motion={activeStyle.motion} className="motion-float motion-hero" />
               </div>
               {STYLES.slice(0, 6).map((s, i) => (
                 <button
@@ -486,7 +489,7 @@ export function Reaction() {
                   aria-label={`Preview ${s.label}`}
                 >
                   <span className="provider-dot" />
-                  <Emoji emoji={featuredEmoji} provider={s.provider} size={i === 0 ? 48 : 40} className="motion-drift" />
+                  <Emoji emoji={featuredEmoji} provider={s.provider} size={i === 0 ? 48 : 40} motion={s.motion} className="motion-drift" />
                   <small>{s.label}</small>
                 </button>
               ))}
@@ -518,7 +521,7 @@ export function Reaction() {
               <article className="process-card">
                 <span className="process-number">01</span>
                 <div className="process-visual provider-mini-grid">
-                  {STYLES.slice(0, 4).map((s) => <span key={s.key}><Emoji emoji="✨" provider={s.provider} size={27} className="motion-sparkle" /></span>)}
+                  {STYLES.slice(0, 4).map((s) => <span key={s.key}><Emoji emoji="✨" provider={s.provider} size={27} motion={s.motion} className="motion-sparkle" /></span>)}
                 </div>
                 <h3>Choose a provider</h3>
                 <p>Pick one visual system—or switch at runtime with a single prop.</p>
@@ -583,7 +586,7 @@ export function Reaction() {
                   <div className="provider-list">
                     {STYLES.map((s) => (
                       <button key={s.key} className={style === s.key ? "active" : ""} onClick={() => setStyle(s.key)}>
-                        <span><Emoji emoji="✨" provider={s.provider} size={18} /> {s.label}</span><i />
+                        <span><Emoji emoji="✨" provider={s.provider} size={18} motion={s.motion} /> {s.label}</span><i />
                       </button>
                     ))}
                   </div>
@@ -600,13 +603,13 @@ export function Reaction() {
                   </div>
                   <div className="featured-output">
                     <div className="output-glow" />
-                    <Emoji emoji={featuredEmoji} provider={activeStyle.provider} size={Math.max(size.px * 2, 64)} className="motion-float motion-subtle" />
+                    <Emoji emoji={featuredEmoji} provider={activeStyle.provider} size={Math.max(size.px * 2, 64)} motion={activeStyle.motion} className="motion-float motion-subtle" />
                     <div><span>Current output</span><strong>{featuredEmoji} · {activeStyle.label}</strong></div>
                   </div>
                   <div className="quick-grid">
                     {visibleEmojis.slice(0, 18).map((emoji) => (
                       <button key={emoji} className={featuredEmoji === emoji ? "active" : ""} onClick={() => setFeaturedEmoji(emoji)} title={getEmojiData(emoji)?.alt ?? emoji}>
-                        <Emoji emoji={emoji} size={size.px} provider={activeStyle.provider} />
+                        <Emoji emoji={emoji} size={size.px} provider={activeStyle.provider} motion={activeStyle.motion} />
                       </button>
                     ))}
                   </div>
@@ -627,7 +630,7 @@ export function Reaction() {
               {FRAMEWORK_EXAMPLES.map((fw) => <button key={fw.id} className={`${fw.id} ${activeTab === fw.id ? "active" : ""}`} onClick={() => setActiveTab(fw.id)}><FrameworkIcon id={fw.id} /><span>{fw.label}</span></button>)}
             </div>
             <div className="framework-content-new">
-              <div className="framework-result"><span>Rendered output</span><Emoji emoji={featuredEmoji} size={96} className="motion-float motion-subtle" /><strong>{activeStyle.label}</strong></div>
+              <div className="framework-result"><span>Rendered output</span><Emoji emoji={featuredEmoji} size={96} motion={activeStyle.motion} className="motion-float motion-subtle" /><strong>{activeStyle.label}</strong></div>
               <div className="code-block"><div className="code-header"><span className="code-lang">{activeTab === "react" ? "tsx" : activeTab}</span><CopyButton text={activeExample.code} label="Copy code" /></div><pre className="code-content"><code>{highlightCode(activeExample.code, activeTab)}</code></pre></div>
             </div>
           </section>

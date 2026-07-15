@@ -28,6 +28,7 @@ Every built-in image provider uses artwork with documented redistribution terms 
 
 - ✅ **Interchangeable providers** — Fluent Emoji, Noto Emoji, Twemoji, local assets, and native Unicode
 - ✅ **Opt-in animation** — official Noto Animated WebP assets with automatic static fallback
+- ✅ **Provider-independent motion** — animate licensed emoji or custom assets with reduced-motion-aware presets
 - ✅ **Automatic fallback chain** — gracefully degrades through providers when images fail to load
 - ✅ **IntersectionObserver lazy loading** — emoji load only when they enter the viewport, with skeleton placeholders
 - ✅ **React component (`<Emoji>`)** — drop-in component with props for provider, size, alt text, and lazy loading
@@ -71,6 +72,14 @@ import { Emoji, experimentalProviders } from "react-emoji-styles";
 ```
 
 When an animation is unavailable, the React component continues through its normal fallback chain.
+
+Motion presets work with any provider, including Fluent 3D and your own mapped assets:
+
+```tsx
+<Emoji emoji="🚀" provider={publicProviders.fluent3d} motion="bounce" />
+```
+
+Available presets are `float`, `bounce`, `pulse`, and `wiggle`. They automatically stop when the user enables reduced motion.
 
 ## Quick Start
 
@@ -339,6 +348,7 @@ export class EmojiComponent {
 | `className` | `string` | `""` | Additional CSS class on the container |
 | `lazy` | `boolean` | `true` | Use IntersectionObserver for viewport-based loading |
 | `fallback` | `boolean` | `true` | Render native emoji if image fails to load |
+| `motion` | `"float" \| "bounce" \| "pulse" \| "wiggle" \| false` | `false` | Apply reduced-motion-aware movement without changing artwork providers |
 
 ### `<EmojiText>` Component
 
