@@ -31,6 +31,16 @@ Fluent Emoji artwork is copyright Microsoft Corporation and contributors and is 
 - License: https://github.com/microsoft/fluentui-emoji/blob/main/LICENSE
 - Modifications: none; the library resolves the upstream assets through jsDelivr
 
+### Fluent Emoji Animated
+
+The official animated Fluent Emoji collection is also copyright Microsoft Corporation and licensed under the MIT License. The provider exposes only assets present in the pinned upstream catalog and falls back when an emoji has no official animation.
+
+- Source: https://github.com/microsoft/fluentui-emoji-animated
+- Pinned revision: `daa0365c09795789ed2bc6e8b228c97736cb6669`
+- License: https://github.com/microsoft/fluentui-emoji-animated/blob/daa0365c09795789ed2bc6e8b228c97736cb6669/LICENSE
+- Format: animated PNG, 256×256 pixels
+- Modifications: none; the library resolves pinned upstream assets through GitHub's media endpoint
+
 ## Noto Emoji
 
 Noto Emoji artwork is copyright Google LLC and contributors. PNG artwork is distributed under the Apache License 2.0; font files in the upstream project are separately covered by the SIL Open Font License.

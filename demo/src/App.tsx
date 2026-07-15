@@ -17,6 +17,7 @@ import deployIconUrl from "./assets/deploy.svg";
 // ─── Constants ───
 
 const STYLES: { key: string; label: string; emoji: string; provider: EmojiAssetProvider }[] = [
+  { key: "fluent-animated", label: "Fluent Animated", emoji: "▶", provider: publicProviders.fluentAnimated },
   { key: "noto-animated", label: "Noto Animated", emoji: "▶", provider: experimentalProviders.notoAnimated },
   { key: "fluent-3d", label: "Fluent 3D", emoji: "◉", provider: publicProviders.fluent3d },
   { key: "fluent-color", label: "Fluent Color", emoji: "◐", provider: publicProviders.fluentColor },
@@ -61,7 +62,7 @@ const FRAMEWORK_EXAMPLES = [
     label: "React",
     code: `import { Emoji, EmojiProvider, publicProviders } from 'react-emoji-styles';
 
-<EmojiProvider provider={publicProviders.fluent3d}>
+<EmojiProvider provider={publicProviders.fluentAnimated}>
   <Emoji emoji="🚀" size="lg" />
 </EmojiProvider>`,
   },
@@ -349,7 +350,7 @@ function highlightCode(code: string, language: string): React.ReactNode {
 // ─── Component ───
 
 export default function App() {
-  const [style, setStyle] = useState("noto-animated");
+  const [style, setStyle] = useState("fluent-animated");
   const [size, setSize] = useState<SizeOption>(SIZES[4]); // xl
   const [search, setSearch] = useState("");
   const [visibleCount, setVisibleCount] = useState(EMOJI_BATCH_SIZE);
@@ -401,6 +402,7 @@ export default function App() {
     ? "localTwemojiProvider"
     : ({
         "fluent-3d": "publicProviders.fluent3d",
+        "fluent-animated": "publicProviders.fluentAnimated",
         "fluent-color": "publicProviders.fluentColor",
         "fluent-flat": "publicProviders.fluentFlat",
         "noto-animated": "experimentalProviders.notoAnimated",

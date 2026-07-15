@@ -15,6 +15,16 @@ describe("emoji URL API", () => {
     );
   });
 
+  it("resolves only official Fluent Animated APNG assets", () => {
+    expect(getEmojiUrl("🚀", "fluent-animated")).toBe(
+      "https://media.githubusercontent.com/media/microsoft/fluentui-emoji-animated/daa0365c09795789ed2bc6e8b228c97736cb6669/assets/Rocket/animated/rocket_animated.png",
+    );
+    expect(getEmojiUrl("🧑🏻‍🚒", "fluent-animated")).toContain(
+      "/assets/Firefighter/Light/animated/firefighter_animated_light.png",
+    );
+    expect(getEmojiUrl("💡", "fluent-animated")).toBeNull();
+  });
+
   it("uses official Fluent paths when CLDR labels differ", () => {
     expect(getEmojiUrl("🌑", "fluent-color")).toContain(
       "/assets/New%20moon/Color/new_moon_color.svg",

@@ -27,7 +27,7 @@ Every built-in image provider uses artwork with documented redistribution terms 
 ## Features
 
 - ✅ **Interchangeable providers** — Fluent Emoji, Noto Emoji, Twemoji, local assets, and native Unicode
-- ✅ **Opt-in animation** — official Noto Animated WebP assets with automatic static fallback
+- ✅ **Official animation** — Microsoft Fluent Animated APNG and opt-in Noto Animated WebP with automatic static fallback
 - ✅ **Automatic fallback chain** — gracefully degrades through providers when images fail to load
 - ✅ **IntersectionObserver lazy loading** — emoji load only when they enter the viewport, with skeleton placeholders
 - ✅ **React component (`<Emoji>`)** — drop-in component with props for provider, size, alt text, and lazy loading
@@ -45,6 +45,7 @@ Every built-in image provider uses artwork with documented redistribution terms 
 
 | Provider | Reference | Availability | Format |
 | --- | --- | --- | --- |
+| Fluent Emoji Animated | `publicProviders.fluentAnimated` | Public · MIT · pinned revision | Animated PNG |
 | Fluent Emoji 3D | `publicProviders.fluent3d` | Public · MIT | PNG |
 | Fluent Emoji Color | `publicProviders.fluentColor` | Public · MIT | SVG |
 | Fluent Emoji Flat | `publicProviders.fluentFlat` | Public · MIT | SVG |
@@ -58,11 +59,12 @@ Every built-in image provider uses artwork with documented redistribution terms 
 import { Emoji, publicProviders } from "react-emoji-styles";
 
 <Emoji emoji="🔥" provider={publicProviders.fluent3d} />
+<Emoji emoji="🚀" provider={publicProviders.fluentAnimated} />
 <Emoji emoji="🚀" provider={publicProviders.noto} />
 <Emoji emoji="✨" provider={publicProviders.native} />
 ```
 
-Animated Noto assets are an explicit preview opt-in because Google serves this collection from a rolling `latest` endpoint:
+Fluent Animated uses Microsoft's official MIT-licensed APNG collection at a pinned revision. Its catalog is intentionally partial, so unsupported emoji continue through the normal fallback chain. Animated Noto assets are a separate preview opt-in because Google serves that collection from a rolling `latest` endpoint:
 
 ```tsx
 import { Emoji, experimentalProviders } from "react-emoji-styles";
