@@ -1,6 +1,6 @@
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
-import { createCdnProvider, publicProviders } from "emoji-styles";
+import { createCdnProvider, defineEmojiConfig, publicProviders } from "emoji-styles";
 import { Emoji } from "../src/Emoji";
 import { EmojiProvider } from "../src/EmojiProvider";
 
@@ -61,6 +61,25 @@ describe("Emoji", () => {
     );
   });
 
+  it("inherits the complete project config from one root provider", () => {
+    const config = defineEmojiConfig({
+      provider: customProvider,
+      fallbacks: [publicProviders.noto],
+      nativeFallback: false,
+    });
+    const { container } = render(
+      <EmojiProvider config={config}>
+        <Emoji emoji="🚀" loading="eager" />
+      </EmojiProvider>,
+    );
+    const image = screen.getByRole("img");
+    expect(image.getAttribute("src")).toContain("assets.example.com");
+    fireEvent.error(image);
+    expect(image.getAttribute("src")).toContain("noto-emoji");
+    fireEvent.error(image);
+    expect(container.querySelector("[data-provider='native']")).toBeNull();
+  });
+
   it("falls back to Twemoji and then native text", async () => {
     render(<Emoji emoji="🚀" provider={customProvider} lazy={false} />);
 
@@ -88,6 +107,24 @@ describe("Emoji", () => {
     fireEvent.error(image);
     expect(container.querySelector("img")).not.toBeInTheDocument();
     expect(container.querySelector("[data-emoji='🚀']")).toHaveClass("emoji-styles--hidden");
+  });
+
+  it("uses a configured provider chain without falling through to the OS", () => {
+    const { container } = render(
+      <Emoji
+        emoji="🚀"
+        provider={customProvider}
+        fallbacks={[publicProviders.noto]}
+        nativeFallback={false}
+        loading="eager"
+      />,
+    );
+    const image = screen.getByRole("img");
+    fireEvent.error(image);
+    expect(image.getAttribute("src")).toContain("noto-emoji");
+    fireEvent.error(image);
+    expect(container.querySelector("img")).not.toBeInTheDocument();
+    expect(container.querySelector("[data-provider='native']")).toBeNull();
   });
 
   it("renders lazy images when IntersectionObserver is unavailable", async () => {

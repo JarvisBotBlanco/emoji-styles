@@ -6,6 +6,7 @@ export {
   getRegisteredProvider,
   getRegisteredTheme,
   getRegisteredProviders,
+  getEmojiStylesConfig,
 } from "./registry";
 export type {
   RenderEmojiOptions,

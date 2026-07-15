@@ -51,6 +51,18 @@ describe("styled-emoji Web Component", () => {
     expect(element.textContent).toContain("🚀");
   });
 
+  it("does not reveal OS emoji when native fallback is disabled", async () => {
+    const element = document.createElement("styled-emoji") as StyledEmojiElement;
+    element.setAttribute("emoji", "🚀");
+    element.setAttribute("provider", "fluent-3d");
+    element.setAttribute("native-fallback", "false");
+    document.body.append(element);
+    await element.render();
+    element.querySelector("img")?.dispatchEvent(new Event("error"));
+    expect(element.getAttribute("data-provider")).toBe("unresolved");
+    expect(element.textContent).not.toContain("🚀");
+  });
+
   it("reuses matching server-rendered image markup during hydration", async () => {
     const element = document.createElement("styled-emoji") as StyledEmojiElement;
     element.setAttribute("emoji", "🚀");

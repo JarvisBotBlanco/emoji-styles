@@ -19,6 +19,7 @@ export interface EmojiTokenProps {
   theme?: EmojiTheme;
   provider?: EmojiThemeProviderRef;
   fallbacks?: readonly EmojiThemeProviderRef[];
+  nativeFallback?: boolean;
   providers?: Readonly<Record<string, EmojiAssetProvider>>;
   locale?: string;
   label?: string;
@@ -27,6 +28,7 @@ export interface EmojiTokenProps {
   className?: string;
   lazy?: boolean;
   loading?: "lazy" | "eager";
+  /** @deprecated Use nativeFallback. */
   fallback?: boolean;
   onResolve?: (result: ResolvedEmojiToken) => void;
   onFallback?: EmojiComponentProps["onFallback"];
@@ -47,6 +49,7 @@ export function EmojiToken({
   theme,
   provider,
   fallbacks,
+  nativeFallback: nativeFallbackProp,
   providers,
   locale,
   label,
@@ -55,18 +58,20 @@ export function EmojiToken({
   className = "",
   lazy = true,
   loading,
-  fallback = true,
+  fallback,
   onResolve,
   onFallback,
   onError,
 }: EmojiTokenProps) {
   const context = useEmojiContext();
   const effectiveTheme = theme ?? context.theme;
+  const nativeFallback = nativeFallbackProp ?? fallback ?? context.nativeFallback ?? effectiveTheme?.nativeFallback ?? true;
   const registry = providers ?? context.providers;
   const { definition, result, error } = useEmojiToken(token, {
     theme: effectiveTheme,
     provider,
     fallbacks,
+    nativeFallback,
     providers: registry,
     locale,
   });
@@ -124,12 +129,12 @@ export function EmojiToken({
       <Emoji
         emoji={emoji}
         provider={renderProvider}
-        fallbacks={emojiFallbacks.length > 0 ? emojiFallbacks : undefined}
+        fallbacks={emojiFallbacks}
+        nativeFallback={nativeFallback}
         size={size}
         alt={isDecorative ? "" : resolvedLabel}
         lazy={lazy}
         loading={loading}
-        fallback={fallback}
         decorative={isDecorative}
         onFallback={onFallback}
         onError={onError}

@@ -2,6 +2,8 @@ import { tokenizeEmojiText, type EmojiProviderRef } from "emoji-styles";
 
 export interface TransformEmojiTextConfig {
   provider?: EmojiProviderRef | string;
+  fallbacks?: readonly (EmojiProviderRef | string)[];
+  nativeFallback?: boolean;
   size?: number | string;
   decorative?: boolean;
   include?: (textNode: Text) => boolean;
@@ -69,6 +71,10 @@ export function transformEmojiText(
       if (config.provider) {
         element.setAttribute("provider", typeof config.provider === "string" ? config.provider : config.provider.id);
       }
+      if (config.fallbacks?.length) {
+        element.setAttribute("fallbacks", config.fallbacks.map((fallback) => typeof fallback === "string" ? fallback : fallback.id).join(","));
+      }
+      if (config.nativeFallback === false) element.setAttribute("native-fallback", "false");
       if (config.size !== undefined) element.setAttribute("size", String(config.size));
       if (config.decorative) element.setAttribute("decorative", "");
       fragment.append(element);

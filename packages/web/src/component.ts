@@ -23,7 +23,7 @@ export interface StyledEmojiResolvedDetail {
 
 export class StyledEmojiElement extends HTMLElementBase {
   static get observedAttributes(): string[] {
-    return ["emoji", "token", "theme", "provider", "label", "size", "decorative", "loading"];
+    return ["emoji", "token", "theme", "provider", "fallbacks", "native-fallback", "label", "size", "decorative", "loading"];
   }
 
   providerObject?: EmojiAssetProvider;
@@ -46,6 +46,10 @@ export class StyledEmojiElement extends HTMLElementBase {
     const token = this.getAttribute("token") ?? undefined;
     const emoji = this.getAttribute("emoji") ?? "";
     const provider = this.providerObject ?? this.getAttribute("provider") ?? undefined;
+    const fallbacks = this.getAttribute("fallbacks")?.split(",").map((value) => value.trim()).filter(Boolean);
+    const nativeFallback = this.hasAttribute("native-fallback")
+      ? this.getAttribute("native-fallback") !== "false"
+      : undefined;
     const size = parseSize(this.getAttribute("size"));
 
     try {
@@ -53,11 +57,13 @@ export class StyledEmojiElement extends HTMLElementBase {
       if (token) {
         const theme = this.themeObject ?? getRegisteredTheme(this.getAttribute("theme") ?? undefined);
         if (!theme) throw new Error(`No registered theme for token ${token}`);
-        result = await renderEmojiTokenToHTMLResult(token, theme, { provider, size });
+        result = await renderEmojiTokenToHTMLResult(token, theme, { provider, fallbacks, nativeFallback, size });
       } else {
         if (!emoji) throw new Error("styled-emoji requires an emoji or token attribute");
         result = await renderEmojiToHTMLResult(emoji, {
           provider,
+          fallbacks,
+          nativeFallback,
           label: this.getAttribute("label") ?? undefined,
           decorative: this.hasAttribute("decorative"),
           size,
@@ -79,9 +85,9 @@ export class StyledEmojiElement extends HTMLElementBase {
   private commit(result: RenderedEmojiHTML, token?: string): void {
     const requestedSize = parseSize(this.getAttribute("size")) ?? "md";
     const size = typeof requestedSize === "number" ? requestedSize : SIZE_MAP[requestedSize];
-    this.setAttribute("data-provider", result.asset?.providerId ?? "native");
+    this.setAttribute("data-provider", result.asset?.providerId ?? (result.nativeFallback ? "native" : "unresolved"));
     this.setAttribute("data-resolved-emoji", result.emoji);
-    if (result.decorative) {
+    if (result.decorative || !result.asset && !result.nativeFallback) {
       this.setAttribute("aria-hidden", "true");
       this.removeAttribute("role");
       this.removeAttribute("aria-label");
@@ -94,12 +100,14 @@ export class StyledEmojiElement extends HTMLElementBase {
     const native = document.createElement("span");
     native.className = "styled-emoji__native";
     native.setAttribute("aria-hidden", "true");
-    native.textContent = result.emoji;
+    native.textContent = result.nativeFallback ? result.emoji : "";
 
     this.#fallbackIndex = 0;
     this.#fallbackUrls = result.fallbackUrls.filter((url) => url !== result.asset?.url);
-    if (!result.asset) {
+    if (!result.asset && result.nativeFallback) {
       this.replaceChildren(native);
+    } else if (!result.asset) {
+      this.replaceChildren();
     } else {
       const existing = this.querySelector<HTMLImageElement>("img.styled-emoji__image");
       const image = existing?.getAttribute("src") === result.asset.url
@@ -143,10 +151,15 @@ export class StyledEmojiElement extends HTMLElementBase {
       return;
     }
     image.hidden = true;
-    native.hidden = false;
-    this.setAttribute("data-provider", "native");
+    if (result.nativeFallback) {
+      native.hidden = false;
+      this.setAttribute("data-provider", "native");
+    } else {
+      this.replaceChildren();
+      this.setAttribute("data-provider", "unresolved");
+    }
     this.dispatchEvent(new CustomEvent("emoji-fallback", {
-      detail: { emoji: result.emoji, token, url: null, index: this.#fallbackIndex },
+      detail: { emoji: result.emoji, token, url: null, index: this.#fallbackIndex, native: result.nativeFallback },
       bubbles: true,
     }));
   }

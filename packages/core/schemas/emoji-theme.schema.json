@@ -15,6 +15,7 @@
       "type": "array",
       "items": { "$ref": "#/$defs/providerRef" }
     },
+    "nativeFallback": { "type": "boolean" },
     "inherits": {
       "type": "array",
       "uniqueItems": true,

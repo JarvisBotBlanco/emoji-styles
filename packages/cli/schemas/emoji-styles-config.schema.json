@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://emoji.style/schemas/emoji-styles-config.schema.json",
+  "title": "Emoji Styles project configuration",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "provider", "fallbacks", "source"],
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "provider": { "type": "string", "minLength": 1 },
+    "fallbacks": { "type": "array", "items": { "type": "string", "minLength": 1 }, "uniqueItems": true },
+    "nativeFallback": { "type": "boolean", "default": true },
+    "source": { "type": "array", "items": { "type": "string", "minLength": 1 }, "minItems": 1, "uniqueItems": true },
+    "localAssets": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["directory", "manifest"],
+      "properties": {
+        "directory": { "type": "string", "minLength": 1 },
+        "manifest": { "type": "string", "minLength": 1 }
+      }
+    },
+    "semanticTokens": { "type": "string", "minLength": 1 },
+    "policy": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": { "allowRemoteAssets": { "type": "boolean" } }
+    }
+  }
+}

@@ -6,6 +6,7 @@ import {
   renderEmojiToHTMLResult,
   renderEmojiTokenToHTML,
   renderPreloadLink,
+  configureEmojiStyles,
 } from "../src";
 
 describe("SSR renderer", () => {
@@ -33,6 +34,30 @@ describe("SSR renderer", () => {
     expect(html).toContain("data-provider=\"native\"");
     expect(html).toContain("💡");
     expect(html).not.toContain("<img");
+  });
+
+  it("can exhaust a custom chain without rendering OS emoji", async () => {
+    const result = await renderEmojiToHTMLResult("🫪", {
+      provider: publicProviders.twemoji,
+      fallbacks: [publicProviders.fluentAnimated],
+      nativeFallback: false,
+    });
+    expect(result.nativeFallback).toBe(false);
+    expect(result.resolution?.nativeFallback).toBe(false);
+    expect(result.html).toContain('data-provider="unresolved"');
+    expect(result.html).not.toContain(">🫪<");
+  });
+
+  it("uses one global project config when call sites omit provider props", async () => {
+    configureEmojiStyles({
+      provider: "fluent-animated",
+      fallbacks: ["fluent-3d", "twemoji"],
+      nativeFallback: false,
+    });
+    const result = await renderEmojiToHTMLResult("💡");
+    expect(result.asset?.providerId).toBe("fluent-3d");
+    expect(result.nativeFallback).toBe(false);
+    configureEmojiStyles({ provider: "twemoji", fallbacks: [], nativeFallback: true });
   });
 
   it("renders a hydratable Web Component host on request", async () => {

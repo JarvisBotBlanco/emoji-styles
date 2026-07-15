@@ -12,7 +12,7 @@ A typed, multi-provider emoji toolkit for React with smart fallbacks, lazy loadi
 [![CI](https://github.com/Blancochuy/emoji-styles/actions/workflows/ci.yml/badge.svg)](https://github.com/Blancochuy/emoji-styles/actions/workflows/ci.yml)
 [![TypeScript](https://img.shields.io/badge/TypeScript-strict-3178c6?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 
-[Quick start](#quick-start) · [Features](#features) · [Providers](#providers) · [Semantic tokens](./docs/SEMANTIC_TOKENS.md) · [Universal web](./docs/WEB.md) · [Manifests](./docs/PROVIDER_MANIFESTS.md) · [AI agents](#why-ai-agents-benefit) · [API](#api-reference) · [Build Week](./docs/BUILD_WEEK.md) · [Development](#development)
+[Quick start](#quick-start) · [Features](#features) · [Providers](#providers) · [Project config](./docs/CONFIGURATION.md) · [Semantic tokens](./docs/SEMANTIC_TOKENS.md) · [Universal web](./docs/WEB.md) · [CLI](./docs/CLI.md) · [Manifests](./docs/PROVIDER_MANIFESTS.md) · [AI agents](#why-ai-agents-benefit) · [API](#api-reference) · [Build Week](./docs/BUILD_WEEK.md) · [Development](#development)
 
 </div>
 
@@ -341,10 +341,11 @@ export class EmojiComponent {
 | `size` | `"xs" \| "sm" \| "md" \| "lg" \| "xl" \| "2xl" \| "3xl" \| number` | `"md"` | Preset size (`xs`=12px to `3xl`=48px) or exact pixel value |
 | `label` | `string` | CLDR label | Accessible label for image or native fallback |
 | `decorative` | `boolean` | `false` | Emit empty alt text and hide output from assistive technology |
-| `fallbacks` | `EmojiProviderRef[]` | Twemoji, native | Ordered provider fallback policy |
+| `fallbacks` | `EmojiProviderRef[]` | Twemoji | Ordered image-provider fallback policy |
+| `nativeFallback` | `boolean` | `true` | Append native OS emoji after the provider chain |
 | `className` | `string` | `""` | Additional CSS class on the container |
 | `loading` | `"lazy" \| "eager"` | `"lazy"` | Browser-native image loading strategy |
-| `fallback` | `boolean` | `true` | Render native emoji if image fails to load |
+| `fallback` | `boolean` | `true` | Deprecated alias for `nativeFallback` |
 | `onResolve` | `(resolution) => void` | — | Receive the structured core v2 resolution |
 | `onFallback` | `(event) => void` | — | Observe provider or native fallback transitions |
 | `onError` | `(event) => void` | — | Observe failed image URLs without suppressing fallback |
