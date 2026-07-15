@@ -5,28 +5,21 @@ import {
   getAvailableEmojis,
   getEmojiData,
   providers,
+  publicProviders,
 } from "react-emoji-styles";
 import type { EmojiAssetProvider, EmojiSize } from "react-emoji-styles";
 import { localTwemojiProvider } from "emoji-styles-assets-twemoji";
 
 // ─── Constants ───
 
-const nativeProvider: EmojiAssetProvider = {
-  id: "native",
-  label: "Native Unicode",
-  visibility: "custom",
-  getUrl: () => null,
-};
-
 const STYLES: { key: string; label: string; emoji: string; provider: EmojiAssetProvider }[] = [
-  { key: "microsoft-teams", label: "Microsoft Teams", emoji: "🏢", provider: providers["microsoft-teams"] },
-  { key: "apple", label: "Apple", emoji: "", provider: providers.apple },
-  { key: "google", label: "Google", emoji: "🔵", provider: providers.google },
-  { key: "samsung", label: "Samsung", emoji: "📱", provider: providers.samsung },
-  { key: "animated", label: "Animated", emoji: "✨", provider: providers.animated },
+  { key: "fluent-3d", label: "Fluent 3D", emoji: "◉", provider: publicProviders.fluent3d },
+  { key: "fluent-color", label: "Fluent Color", emoji: "◐", provider: publicProviders.fluentColor },
+  { key: "fluent-flat", label: "Fluent Flat", emoji: "◇", provider: publicProviders.fluentFlat },
+  { key: "noto", label: "Noto", emoji: "N", provider: publicProviders.noto },
   { key: "twemoji-local", label: "Twemoji Local", emoji: "📦", provider: localTwemojiProvider },
   { key: "twemoji-cdn", label: "Twemoji CDN", emoji: "☁️", provider: providers.twemoji },
-  { key: "native", label: "Native", emoji: "Aa", provider: nativeProvider },
+  { key: "native", label: "Native (OS)", emoji: "Aa", provider: publicProviders.native },
 ];
 
 type SizeOption = { label: string; value: EmojiSize; px: number };
@@ -42,63 +35,15 @@ const SIZES: SizeOption[] = [
 
 const EMOJI_BATCH_SIZE = 180;
 
-// ─── Hero floating emojis ───
-
-const HERO_FLOATING_EMOJIS = [
-  { emoji: "🚀", provider: providers["microsoft-teams"], style: { top: "12%", left: "5%", fontSize: "56px", animationDelay: "0s" } },
-  { emoji: "❤️", provider: providers.apple, style: { top: "18%", right: "8%", fontSize: "48px", animationDelay: "1.2s" } },
-  { emoji: "🔥", provider: providers.google, style: { bottom: "20%", left: "8%", fontSize: "52px", animationDelay: "2.4s" } },
-  { emoji: "✨", provider: providers.samsung, style: { top: "8%", right: "22%", fontSize: "40px", animationDelay: "0.6s" } },
-  { emoji: "🎉", provider: providers.animated, style: { bottom: "15%", right: "5%", fontSize: "44px", animationDelay: "1.8s" } },
-  { emoji: "🌈", provider: localTwemojiProvider, style: { top: "35%", left: "2%", fontSize: "36px", animationDelay: "3s" } },
-  { emoji: "💡", provider: providers.twemoji, style: { bottom: "30%", right: "18%", fontSize: "38px", animationDelay: "0.9s" } },
-  { emoji: "⚡", provider: providers.apple, style: { top: "50%", left: "12%", fontSize: "32px", animationDelay: "2s" } },
-];
-
-// ─── Feature cards ───
-
-const FEATURES = [
-  {
-    icon: (
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <rect x="3" y="3" width="18" height="18" rx="3" />
-        <path d="M3 9h18M9 3v18" />
-      </svg>
-    ),
-    title: "Multi-Provider",
-    description: "Switch between 8 emoji styles with a single prop. Teams, Apple, Google, Samsung, and more.",
-  },
-  {
-    icon: (
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z" />
-        <path d="M9 12l2 2 4-4" />
-      </svg>
-    ),
-    title: "Smart Fallback",
-    description: "Automatic fallback chain when an emoji fails to load. Always renders something.",
-  },
-  {
-    icon: (
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-        <path d="M12 8v4l3 3" />
-      </svg>
-    ),
-    title: "Lazy Loading",
-    description: "IntersectionObserver-based loading with skeleton placeholders. Zero layout shift.",
-  },
-];
-
 // ─── Framework code examples ───
 
 const FRAMEWORK_EXAMPLES = [
   {
     id: "react",
     label: "React",
-    code: `import { Emoji, EmojiProvider, providers } from 'react-emoji-styles';
+    code: `import { Emoji, EmojiProvider, publicProviders } from 'react-emoji-styles';
 
-<EmojiProvider provider={providers.apple}>
+<EmojiProvider provider={publicProviders.fluent3d}>
   <Emoji emoji="🚀" size="lg" />
 </EmojiProvider>`,
   },
@@ -106,45 +51,37 @@ const FRAMEWORK_EXAMPLES = [
     id: "vue",
     label: "Vue",
     code: `<template>
-  <EmojiProvider :provider="appleProvider">
-    <Emoji emoji="🚀" size="lg" />
-  </EmojiProvider>
+  <img :src="rocketUrl" alt="Rocket" width="32" height="32" />
 </template>
 
 <script setup>
-import { Emoji, EmojiProvider } from 'react-emoji-styles/vue';
-import { providers } from 'react-emoji-styles';
-const appleProvider = providers.apple;
+import { getEmojiUrl } from 'emoji-styles';
+const rocketUrl = getEmojiUrl('🚀', 'noto');
 </script>`,
   },
   {
     id: "svelte",
     label: "Svelte",
     code: `<script>
-  import { Emoji, EmojiProvider } from 'react-emoji-styles/svelte';
-  import { providers } from 'react-emoji-styles';
+  import { getEmojiUrl } from 'emoji-styles';
+  const rocketUrl = getEmojiUrl('🚀', 'twemoji');
 </script>
 
-<EmojiProvider provider={providers.apple}>
-  <Emoji emoji="🚀" size="lg" />
-</EmojiProvider>`,
+<img src={rocketUrl} alt="Rocket" width="32" height="32" />`,
   },
   {
     id: "angular",
     label: "Angular",
-    code: `// component.ts
-import { EmojiModule } from 'react-emoji-styles/angular';
-import { providers } from 'react-emoji-styles';
+    code: `import { Component } from '@angular/core';
+import { getEmojiUrl } from 'emoji-styles';
 
 @Component({
   standalone: true,
-  imports: [EmojiModule],
-  template: \`
-    <emoji-provider [provider]="appleProvider">
-      <emoji emoji="🚀" size="lg"></emoji>
-    </emoji-provider>
-  \`,
-})`,
+  template: \`<img [src]="rocketUrl" alt="Rocket" />\`,
+})
+export class Reaction {
+  rocketUrl = getEmojiUrl('🚀', 'fluent-color');
+}`,
   },
 ];
 
@@ -287,10 +224,36 @@ function GitHubIcon() {
   );
 }
 
-function NpmIcon() {
+function FrameworkIcon({ id }: { id: string }) {
+  if (id === "react") {
+    return (
+      <svg className="framework-icon react-icon" viewBox="0 0 24 24" aria-hidden="true">
+        <circle cx="12" cy="12" r="2" fill="currentColor" />
+        <ellipse cx="12" cy="12" rx="10" ry="4" fill="none" stroke="currentColor" strokeWidth="1.5" />
+        <ellipse cx="12" cy="12" rx="10" ry="4" fill="none" stroke="currentColor" strokeWidth="1.5" transform="rotate(60 12 12)" />
+        <ellipse cx="12" cy="12" rx="10" ry="4" fill="none" stroke="currentColor" strokeWidth="1.5" transform="rotate(120 12 12)" />
+      </svg>
+    );
+  }
+  if (id === "vue") {
+    return (
+      <svg className="framework-icon vue-icon" viewBox="0 0 24 24" aria-hidden="true">
+        <path fill="#42b883" d="M1.5 3.5h5L12 13l5.5-9.5h5L12 21z" />
+        <path fill="#35495e" d="M6.5 3.5h3L12 8l2.5-4.5h3L12 13z" />
+      </svg>
+    );
+  }
+  if (id === "svelte") {
+    return (
+      <svg className="framework-icon svelte-icon" viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M17.8 3.1a6 6 0 0 0-7.2-.2L5.2 6.3a4.1 4.1 0 0 0-1.7 2.5 4 4 0 0 0 .5 2.8 4 4 0 0 0-.7 1.7 4.2 4.2 0 0 0 .6 3.1 6 6 0 0 0 8.3 1.9l5.4-3.4a4.1 4.1 0 0 0 1.7-2.5 4 4 0 0 0-.5-2.8 4 4 0 0 0 .7-1.7 4.2 4.2 0 0 0-1.7-4.8Zm-5.9 13.1a3.2 3.2 0 0 1-4.4-1l-.1-.2.7-.4.1.2a2.4 2.4 0 0 0 3.3.7l5.4-3.4a1.7 1.7 0 0 0 .5-2.4 1.8 1.8 0 0 0-2.4-.6l-5.4 3.4a3.3 3.3 0 0 1-4.5-1 3.2 3.2 0 0 1 1-4.5l5.4-3.4a3.2 3.2 0 0 1 4.4 1l.1.2-.7.4-.1-.2a2.4 2.4 0 0 0-3.3-.7L6.5 7.7a1.7 1.7 0 0 0-.5 2.4 1.8 1.8 0 0 0 2.4.6l5.4-3.4a3.3 3.3 0 0 1 4.5 1 3.2 3.2 0 0 1-1 4.5l-5.4 3.4Z" fill="currentColor" />
+      </svg>
+    );
+  }
   return (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-      <path d="M1.763 0C.786 0 0 .786 0 1.763v20.474C0 23.214.786 24 1.763 24h20.474c.977 0 1.763-.786 1.763-1.763V1.763C24 .786 23.214 0 22.237 0zM5.13 5.323l13.837.019v13.36h-4.123V9.82H9.477v8.878H5.13V5.323z" />
+    <svg className="framework-icon angular-icon" viewBox="0 0 24 24" aria-hidden="true">
+      <path fill="currentColor" d="M12 1.5 21 4.7l-1.4 12.1L12 22.5l-7.6-5.7L3 4.7 12 1.5Z" />
+      <path fill="var(--surface)" d="m12 5-5 11h2l1-2.3h4L15 16h2L12 5Zm-.8 6.8L12 9.7l.8 2.1h-1.6Z" />
     </svg>
   );
 }
@@ -335,38 +298,40 @@ function CopyButton({ text, label }: { text: string; label?: string }) {
 
 function highlightCode(code: string, language: string): React.ReactNode {
   const lines = code.split("\n");
-  return lines.map((line, i) => {
-    let highlighted = line;
-    // Comments
-    highlighted = highlighted.replace(/(\/\/.*$)/gm, '<span class="hl-comment">$1</span>');
-    highlighted = highlighted.replace(/(\/\*[\s\S]*?\*\/)/g, '<span class="hl-comment">$1</span>');
-    // Strings (double, single, backtick)
-    highlighted = highlighted.replace(/(&quot;[^&]*?&quot;|"[^"]*?"|'[^']*?'|`[^`]*?`)/g, '<span class="hl-string">$1</span>');
-    // Keywords
-    const keywords = language === "ts"
-      ? /\b(import|export|from|const|let|var|function|return|if|else|new|default|type|interface|as|async|await)\b/g
-      : /\b(import|export|from|const|let|var|function|return|if|else|new|default|async|await|template|script|setup|class|selector|standalone|imports)\b/g;
-    highlighted = highlighted.replace(keywords, '<span class="hl-keyword">$1</span>');
-    // JSX/HTML tags
-    highlighted = highlighted.replace(/(&lt;\/?[\w-]+)/g, '<span class="hl-tag">$1</span>');
-    highlighted = highlighted.replace(/(<\/?[\w-]+)/g, '<span class="hl-tag">$1</span>');
-    // Numbers
-    highlighted = highlighted.replace(/\b(\d+)\b/g, '<span class="hl-number">$1</span>');
-    // Booleans/null
-    highlighted = highlighted.replace(/\b(true|false|null|undefined|ref|state)\b/g, '<span class="hl-keyword">$1</span>');
-    return (
-      <div key={i} className="code-line">
-        <span className="line-number">{i + 1}</span>
-        <span dangerouslySetInnerHTML={{ __html: highlighted }} />
-      </div>
-    );
-  });
+  const tokenPattern = /(\/\/.*$|\/\*.*?\*\/|'(?:\\.|[^'\\])*'|"(?:\\.|[^"\\])*"|`(?:\\.|[^`\\])*`|<\/?[A-Za-z][^>]*>|\b(?:import|export|from|const|let|function|return|class|new|default|true|false|null|undefined|standalone|template|setup)\b|\b\d+\b|\b(?:Emoji|EmojiProvider|getEmojiUrl|providers)\b)/g;
+
+  const renderLine = (line: string) => {
+    const output: React.ReactNode[] = [];
+    let cursor = 0;
+    for (const match of line.matchAll(tokenPattern)) {
+      const index = match.index ?? 0;
+      if (index > cursor) output.push(line.slice(cursor, index));
+      const token = match[0];
+      let className = "hl-keyword";
+      if (token.startsWith("//") || token.startsWith("/*")) className = "hl-comment";
+      else if (/^['"`]/.test(token)) className = "hl-string";
+      else if (token.startsWith("<")) className = "hl-tag";
+      else if (/^\d+$/.test(token)) className = "hl-number";
+      else if (/^(Emoji|EmojiProvider|getEmojiUrl|providers)$/.test(token)) className = "hl-component";
+      output.push(<span className={className} key={`${index}-${token}`}>{token}</span>);
+      cursor = index + token.length;
+    }
+    if (cursor < line.length) output.push(line.slice(cursor));
+    return output.length ? output : " ";
+  };
+
+  return lines.map((line, i) => (
+    <span key={`${language}-${i}`} className="code-line">
+      <span className="line-number">{i + 1}</span>
+      <span className="code-line-source">{renderLine(line)}</span>
+    </span>
+  ));
 }
 
 // ─── Component ───
 
 export default function App() {
-  const [style, setStyle] = useState("microsoft-teams");
+  const [style, setStyle] = useState("fluent-3d");
   const [size, setSize] = useState<SizeOption>(SIZES[4]); // xl
   const [search, setSearch] = useState("");
   const [visibleCount, setVisibleCount] = useState(EMOJI_BATCH_SIZE);
@@ -376,7 +341,7 @@ export default function App() {
     return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
   });
   const [activeTab, setActiveTab] = useState("react");
-  const [copiedInstall, setCopiedInstall] = useState(false);
+  const [featuredEmoji, setFeaturedEmoji] = useState("🚀");
 
   useEffect(() => {
     document.documentElement.dataset.theme = theme;
@@ -413,338 +378,255 @@ export default function App() {
     setTheme((prev) => (prev === "dark" ? "light" : "dark"));
   }, []);
 
-  const handleCopyInstall = useCallback(async () => {
-    try {
-      await navigator.clipboard.writeText("npm install react-emoji-styles");
-      setCopiedInstall(true);
-      setTimeout(() => setCopiedInstall(false), 2000);
-    } catch {
-      setCopiedInstall(true);
-      setTimeout(() => setCopiedInstall(false), 2000);
-    }
-  }, []);
-
   const activeExample = FRAMEWORK_EXAMPLES.find((f) => f.id === activeTab) ?? FRAMEWORK_EXAMPLES[0];
+  const providerCode = style === "twemoji-local"
+    ? "localTwemojiProvider"
+    : ({
+        "fluent-3d": "publicProviders.fluent3d",
+        "fluent-color": "publicProviders.fluentColor",
+        "fluent-flat": "publicProviders.fluentFlat",
+        noto: "publicProviders.noto",
+        "twemoji-cdn": "publicProviders.twemoji",
+        native: "publicProviders.native",
+      } as Record<string, string>)[style] ?? "publicProviders.twemoji";
+  const providerImport = style === "twemoji-local"
+    ? `import { Emoji } from 'react-emoji-styles';\nimport { localTwemojiProvider } from 'emoji-styles-assets-twemoji';`
+    : `import { Emoji, publicProviders } from\n  'react-emoji-styles';`;
+  const playgroundCode = `${providerImport}
+
+export function Reaction() {
+  return (
+    <Emoji
+      emoji="${featuredEmoji}"
+      provider={${providerCode}}
+      size="${size.label}"
+    />
+  );
+}`;
 
   return (
     <EmojiProvider provider={activeStyle.provider}>
-      <div className="app">
-        {/* Floating Navbar */}
-        <nav className="navbar">
-          <div className="nav-brand">
-            <Emoji emoji="🎨" size={20} /> <span>Emoji Styles</span>
+      <div className="app-shell">
+        <nav className="navbar" aria-label="Main navigation">
+          <a className="nav-brand" href="#top" aria-label="Emoji Styles home">
+            <span className="brand-mark"><Emoji emoji="🙂" size={18} /></span>
+            <span>Emoji <strong>Styles</strong></span>
+          </a>
+          <div className="nav-center">
+            <a href="#playground">Playground</a>
+            <a href="#how">How it works</a>
+            <a href="#agents">For agents</a>
+            <a href="#collection">Collection</a>
           </div>
           <div className="nav-actions">
-            <a
-              href="https://github.com/JarvisBotBlanco/emoji-styles"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="nav-link"
-              aria-label="View on GitHub"
-            >
-              <GitHubIcon />
-            </a>
-            <button
-              className="theme-toggle-btn"
-              onClick={toggleTheme}
-              aria-label={`Switch to ${theme === "dark" ? "light" : "dark"} theme`}
-              aria-pressed={theme === "dark"}
-              title={`Switch to ${theme === "dark" ? "light" : "dark"} theme`}
-            >
+            <a href="https://github.com/JarvisBotBlanco/emoji-styles" target="_blank" rel="noopener noreferrer" className="nav-link" aria-label="View on GitHub"><GitHubIcon /></a>
+            <button className="theme-toggle-btn" onClick={toggleTheme} aria-label={`Switch to ${theme === "dark" ? "light" : "dark"} theme`}>
               {theme === "dark" ? <SunIcon /> : <MoonIcon />}
             </button>
           </div>
         </nav>
 
-        {/* Hero Section */}
-        <header className="hero">
-          <div className="hero-bg">
-            {HERO_FLOATING_EMOJIS.map((item, i) => (
-              <div
-                key={i}
-                className="floating-emoji"
-                style={item.style as React.CSSProperties}
-              >
-                <Emoji emoji={item.emoji} provider={item.provider} size={48} />
+        <main>
+          <header className="hero" id="top">
+            <div className="hero-noise" />
+            <div className="hero-copy">
+              <h1 className="hero-title">One emoji.<br /><span>Every style.</span></h1>
+              <p className="hero-subtitle">Beautiful emoji, without the vendor lock-in. A tiny, typed React API for consistent expression across every interface.</p>
+              <div className="hero-actions">
+                <button className="primary-cta" onClick={() => document.querySelector("#playground")?.scrollIntoView({ behavior: "smooth" })}>
+                  Try the playground <span>↘</span>
+                </button>
+                <div className="install-inline">
+                  <span className="terminal-glyph">›_</span>
+                  <code className="install-code">npm i react-emoji-styles</code>
+                  <CopyButton text="npm install react-emoji-styles" />
+                </div>
               </div>
-            ))}
-          </div>
-          <div className="hero-content">
-            <div className="eyebrow">OpenAI Build Week 2026</div>
-            <h1 className="hero-title">
-              <span className="gradient-text">Emoji Styles</span>
-            </h1>
-            <p className="hero-subtitle">
-              The multi-provider emoji library for modern web apps.
-              One component, eight styles, zero dependencies.
-            </p>
-            <div className="hero-actions">
-              <div className="install-inline">
-                <code className="install-code">npm install react-emoji-styles</code>
-                <CopyButton text="npm install react-emoji-styles" label="Copy" />
-              </div>
-              <a
-                href="https://github.com/JarvisBotBlanco/emoji-styles"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="hero-btn hero-btn-secondary"
-              >
-                <GitHubIcon />
-                <span>GitHub</span>
-              </a>
-            </div>
-            <div className="stats-row">
-              <div className="stat-pill">
-                <span className="stat-number">{allEmojis.length}</span>
-                <span className="stat-label">Emojis</span>
-              </div>
-              <div className="stat-pill">
-                <span className="stat-number">8</span>
-                <span className="stat-label">Providers</span>
-              </div>
-              <div className="stat-pill">
-                <span className="stat-number">0</span>
-                <span className="stat-label">Dependencies</span>
+              <div className="hero-meta">
+                <span><i /> {allEmojis.length}+ emoji</span>
+                <span><i /> {STYLES.length} providers</span>
+                <span><i /> Zero runtime deps</span>
               </div>
             </div>
-          </div>
-        </header>
 
-        {/* How It Works */}
-        <section className="section features-section">
-          <div className="eyebrow">How it works</div>
-          <h2 className="section-title">Built for developers</h2>
-          <div className="features-grid">
-            {FEATURES.map((feature, i) => (
-              <div className="feature-card" key={i}>
-                <div className="feature-icon">{feature.icon}</div>
-                <h3 className="feature-title">{feature.title}</h3>
-                <p className="feature-description">{feature.description}</p>
+            <div className="hero-stage" aria-label="Same emoji rendered by multiple providers">
+              <div className="stage-grid" />
+              <div className="orbit orbit-one" />
+              <div className="orbit orbit-two" />
+              <div className="hero-core">
+                <span className="core-pulse" />
+                <Emoji emoji={featuredEmoji} provider={activeStyle.provider} size={104} />
               </div>
-            ))}
-          </div>
-        </section>
-
-        {/* Framework Examples */}
-        <section className="section">
-          <div className="eyebrow">Framework support</div>
-          <h2 className="section-title">Works everywhere</h2>
-          <div className="framework-tabs">
-            {FRAMEWORK_EXAMPLES.map((fw) => (
-              <button
-                key={fw.id}
-                className={`framework-tab ${activeTab === fw.id ? "active" : ""}`}
-                onClick={() => setActiveTab(fw.id)}
-              >
-                {fw.label}
-              </button>
-            ))}
-          </div>
-          <div className="framework-content">
-            <div className="vs-comparison">
-              <div className="vs-box">
-                <span className="vs-label">Native</span>
-                <span className="vs-emoji" style={{fontSize: '48px', lineHeight: 1}}>🚀</span>
-              </div>
-              <div className="vs-badge">VS</div>
-              <div className="vs-box">
-                <span className="vs-label">emoji-styles</span>
-                <span className="vs-emoji">
-                  <Emoji emoji="🚀" size={48} />
-                </span>
-              </div>
-            </div>
-            <div className="code-block">
-              <div className="code-header">
-                <span className="code-lang">{activeTab === "react" ? "tsx" : activeTab}</span>
-                <CopyButton text={activeExample.code} label="Copy code" />
-              </div>
-              <pre className="code-content">
-                <code>{highlightCode(activeExample.code, activeTab)}</code>
-              </pre>
-            </div>
-          </div>
-        </section>
-
-        {/* Controls */}
-        <section className="controls-section">
-          {/* Style Selector */}
-          <div className="control-card">
-            <div className="eyebrow">Style</div>
-            <div className="pill-group">
-              {STYLES.map((s) => (
+              {STYLES.slice(0, 6).map((s, i) => (
                 <button
                   key={s.key}
-                  className={`pill ${style === s.key ? "active" : ""}`}
+                  className={`provider-float provider-float-${i + 1} ${style === s.key ? "active" : ""}`}
                   onClick={() => setStyle(s.key)}
-                  aria-pressed={style === s.key}
+                  aria-label={`Preview ${s.label}`}
                 >
-                  {s.emoji && <span className="pill-emoji">{s.emoji}</span>}
-                  {s.label}
+                  <span className="provider-dot" />
+                  <Emoji emoji={featuredEmoji} provider={s.provider} size={i === 0 ? 48 : 40} />
+                  <small>{s.label}</small>
                 </button>
               ))}
-            </div>
-          </div>
-
-          {/* Size + Search Row */}
-          <div className="control-row">
-            <div className="control-card compact">
-              <div className="eyebrow">Size</div>
-              <div className="pill-group compact">
-                {SIZES.map((s) => (
-                  <button
-                    key={s.label}
-                    className={`pill size-pill ${size.label === s.label ? "active" : ""}`}
-                    onClick={() => setSize(s)}
-                    aria-pressed={size.label === s.label}
-                  >
-                    {s.label}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            <div className="search-wrapper">
-              <SearchIcon />
-              <input
-                type="text"
-                className="search-input"
-                placeholder="Search emojis…"
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-              />
-            </div>
-          </div>
-        </section>
-
-        {/* All Styles Comparison */}
-        <section className="section">
-          <div className="eyebrow">Compare</div>
-          <h2 className="section-title">All providers — same emoji</h2>
-          <div className="comparison-grid comparison-grid-wide">
-            {STYLES.map((s) => (
-              <div className="comparison-card" key={s.key}>
-                <div className="emoji-preview">
-                  <Emoji emoji="🚀" provider={s.provider} size={48} />
-                </div>
-                <div className="card-label">{s.label}</div>
-              </div>
-            ))}
-          </div>
-        </section>
-
-        {/* Emoji Grid */}
-        <section className="section">
-          <div className="eyebrow">Collection</div>
-          <h2 className="section-title">
-            All {allEmojis.length} emojis — {activeStyle.label}
-          </h2>
-          {filteredEmojis.length > 0 ? (
-            <div className="emoji-grid">
-              {visibleEmojis.map((emoji) => (
-                <LazyEmojiCell
-                  key={emoji}
-                  emoji={emoji}
-                  size={size.px}
-                  emojiProvider={activeStyle.provider}
-                />
-              ))}
-            </div>
-          ) : (
-            <div className="empty-state" role="status">
-              <span className="empty-state-title">No matching emojis</span>
-              <span className="empty-state-copy">
-                Try a Unicode character or a broader English name.
-              </span>
-            </div>
-          )}
-          {visibleEmojis.length < filteredEmojis.length && (
-            <div className="load-more-row">
-              <button
-                className="load-more-button"
-                type="button"
-                onClick={() => setVisibleCount((count) => count + EMOJI_BATCH_SIZE)}
-              >
-                Load {Math.min(EMOJI_BATCH_SIZE, filteredEmojis.length - visibleEmojis.length)} more
-                <span>{visibleEmojis.length} of {filteredEmojis.length}</span>
-              </button>
-            </div>
-          )}
-        </section>
-
-        {/* Install Section */}
-        <section className="section install-section">
-          <div className="install-card">
-            <div className="install-card-content">
-              <h2 className="section-title">Get started</h2>
-              <p className="install-description">
-                Install with your favorite package manager and start rendering
-                beautiful emojis in under a minute.
-              </p>
-              <div className="install-command">
-                <code>npm install react-emoji-styles</code>
-                <CopyButton text="npm install react-emoji-styles" label="Copy" />
-              </div>
-              <div className="install-steps">
-                <div className="install-step">
-                  <span className="step-number">1</span>
-                  <code className="step-code">import {'{'} Emoji, EmojiProvider {'}'} from 'react-emoji-styles'</code>
-                </div>
-                <div className="install-step">
-                  <span className="step-number">2</span>
-                  <code className="step-code">{'<EmojiProvider provider={providers.apple}>'}</code>
-                </div>
-                <div className="install-step">
-                  <span className="step-number">3</span>
-                  <code className="step-code">{'<Emoji emoji="🚀" size="xl" />'}</code>
+              <div className="stage-toolbar">
+                <span><b>{activeStyle.label}</b> · {featuredEmoji}</span>
+                <div className="emoji-switcher">
+                  {["🚀", "🔥", "💡", "🎉"].map((emoji) => (
+                    <button key={emoji} className={featuredEmoji === emoji ? "active" : ""} onClick={() => setFeaturedEmoji(emoji)} aria-label={`Try ${emoji}`}>{emoji}</button>
+                  ))}
                 </div>
               </div>
             </div>
-            <div className="install-preview">
-              <div className="install-preview-emojis">
-                <Emoji emoji="🚀" size={64} />
-                <Emoji emoji="❤️" size={48} />
-                <Emoji emoji="🔥" size={56} />
-                <Emoji emoji="✨" size={44} />
-                <Emoji emoji="🎉" size={52} />
+          </header>
+
+          <section className="trust-strip" aria-label="Product qualities">
+            <span>TypeScript first</span><i />
+            <span>Tree-shakeable</span><i />
+            <span>SSR ready</span><i />
+            <span>Accessible fallbacks</span>
+          </section>
+
+          <section className="section how-section" id="how">
+            <div className="section-heading centered">
+              <div className="eyebrow">How it works</div>
+              <h2>From Unicode to unforgettable UI.</h2>
+              <p>Three small decisions. One consistent visual language across your product.</p>
+            </div>
+            <div className="process-grid">
+              <article className="process-card">
+                <span className="process-number">01</span>
+                <div className="process-visual provider-mini-grid">
+                  {STYLES.slice(0, 4).map((s) => <span key={s.key}><Emoji emoji="✨" provider={s.provider} size={27} /></span>)}
+                </div>
+                <h3>Choose a provider</h3>
+                <p>Pick one visual system—or switch at runtime with a single prop.</p>
+              </article>
+              <article className="process-card featured">
+                <span className="process-number">02</span>
+                <div className="process-visual code-mini">
+                  <span><em>const</em> mood = <b>"🚀"</b></span>
+                  <span>&lt;<strong>Emoji</strong> emoji=mood /&gt;</span>
+                </div>
+                <h3>Drop in the component</h3>
+                <p>Typed props, semantic alt text and smart fallbacks included.</p>
+              </article>
+              <article className="process-card">
+                <span className="process-number">03</span>
+                <div className="process-visual device-mini">
+                  <span className="device desktop"><Emoji emoji="🚀" size={25} /></span>
+                  <span className="device tablet"><Emoji emoji="🚀" size={20} /></span>
+                  <span className="device phone"><Emoji emoji="🚀" size={16} /></span>
+                </div>
+                <h3>Ship everywhere</h3>
+                <p>Consistent output across screens, platforms and user devices.</p>
+              </article>
+            </div>
+          </section>
+
+          <section className="section agents-section" id="agents">
+            <div className="agents-panel">
+              <div className="agents-copy">
+                <span className="section-kicker">AI-native workflows</span>
+                <h2>Predictable UI for code written by agents.</h2>
+                <p>Agents can keep authoring semantic Unicode while Emoji Styles controls the visual output. The result is deterministic screenshots, stable tests, and fewer platform-specific surprises.</p>
+                <div className="agent-benefits">
+                  <div><strong>01</strong><span><b>One typed primitive</b> instead of vendor-specific image logic.</span></div>
+                  <div><strong>02</strong><span><b>Repeatable visual output</b> across local runs, CI, previews, and production.</span></div>
+                  <div><strong>03</strong><span><b>Local-first assets</b> when an agent or sandbox has restricted network access.</span></div>
+                </div>
+              </div>
+              <div className="agent-console" aria-label="Agent-generated component example">
+                <div className="agent-console-bar"><span>agent / ui-task</span><i>verified</i></div>
+                <div className="agent-prompt"><span>›</span><p>Use the product emoji provider and keep the output accessible.</p></div>
+                <pre><code>{highlightCode(`import { Emoji, publicProviders } from 'react-emoji-styles';\n\nexport function Status() {\n  return (\n    <Emoji\n      emoji="✨"\n      provider={publicProviders.fluent3d}\n      size="xl"\n      alt="AI-assisted"\n    />\n  );\n}`, "tsx")}</code></pre>
+                <div className="agent-result"><span>Output</span><Emoji emoji="✨" provider={publicProviders.fluent3d} size={56} /><strong>same input · same render</strong></div>
               </div>
             </div>
-          </div>
-        </section>
+          </section>
 
-        {/* Footer */}
-        <footer className="footer">
-          <div className="footer-content">
-            <div className="footer-left">
-              <Emoji emoji="🎨" size={20} />
-              <span className="footer-brand">react-emoji-styles</span>
+          <section className="section playground-section" id="playground">
+            <div className="section-heading playground-heading">
+              <div><div className="eyebrow">Live playground</div><h2>Make it yours.</h2></div>
+              <p>Everything below is live. Change the renderer, scale the output, and search the full collection.</p>
             </div>
-            <div className="footer-links">
-              <a
-                href="https://www.npmjs.com/package/react-emoji-styles"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="footer-link"
-              >
-                <NpmIcon />
-                npm
-              </a>
-              <a
-                href="https://github.com/JarvisBotBlanco/emoji-styles"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="footer-link"
-              >
-                <GitHubIcon />
-                GitHub
-              </a>
-              <span className="footer-link footer-license">MIT License</span>
+            <div className="playground-window">
+              <div className="window-bar">
+                <div className="window-dots"><i /><i /><i /></div>
+                <span>emoji-styles / playground</span>
+                <span className="live-badge"><i /> Live</span>
+              </div>
+              <div className="playground-layout">
+                <aside className="playground-controls">
+                  <label>Provider <span>{activeStyle.label}</span></label>
+                  <div className="provider-list">
+                    {STYLES.map((s) => (
+                      <button key={s.key} className={style === s.key ? "active" : ""} onClick={() => setStyle(s.key)}>
+                        <span><Emoji emoji="✨" provider={s.provider} size={18} /> {s.label}</span><i />
+                      </button>
+                    ))}
+                  </div>
+                  <label>Output size <span>{size.px}px</span></label>
+                  <div className="size-options">
+                    {SIZES.map((s) => <button key={s.label} className={size.label === s.label ? "active" : ""} onClick={() => setSize(s)}>{s.label}</button>)}
+                  </div>
+                </aside>
+
+                <div className="playground-preview">
+                  <div className="preview-topbar">
+                    <div className="search-wrapper"><SearchIcon /><input className="search-input" placeholder="Search the collection…" value={search} onChange={(e) => setSearch(e.target.value)} /></div>
+                    <span>{filteredEmojis.length} results</span>
+                  </div>
+                  <div className="featured-output">
+                    <div className="output-glow" />
+                    <Emoji emoji={featuredEmoji} provider={activeStyle.provider} size={Math.max(size.px * 2, 64)} />
+                    <div><span>Current output</span><strong>{featuredEmoji} · {activeStyle.label}</strong></div>
+                  </div>
+                  <div className="quick-grid">
+                    {visibleEmojis.slice(0, 18).map((emoji) => (
+                      <button key={emoji} className={featuredEmoji === emoji ? "active" : ""} onClick={() => setFeaturedEmoji(emoji)} title={getEmojiData(emoji)?.alt ?? emoji}>
+                        <Emoji emoji={emoji} size={size.px} provider={activeStyle.provider} />
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="playground-code">
+                  <div className="code-tabs"><span className="active">React</span><span>JSX</span><CopyButton text={playgroundCode} /></div>
+                  <pre className="playground-code-content"><code>{highlightCode(playgroundCode, "tsx")}</code></pre>
+                  <div className="code-note">Typed, lazy-loaded and ready to ship.</div>
+                </div>
+              </div>
             </div>
-            <div className="footer-right">
-              Built with Codex for OpenAI Build Week
+          </section>
+
+          <section className="section frameworks-section">
+            <div className="section-heading"><div className="eyebrow">Framework agnostic</div><h2>One core. Your stack.</h2></div>
+            <div className="framework-tabs">
+              {FRAMEWORK_EXAMPLES.map((fw) => <button key={fw.id} className={`${fw.id} ${activeTab === fw.id ? "active" : ""}`} onClick={() => setActiveTab(fw.id)}><FrameworkIcon id={fw.id} /><span>{fw.label}</span></button>)}
             </div>
-          </div>
-        </footer>
+            <div className="framework-content-new">
+              <div className="framework-result"><span>Rendered output</span><Emoji emoji={featuredEmoji} size={96} /><strong>{activeStyle.label}</strong></div>
+              <div className="code-block"><div className="code-header"><span className="code-lang">{activeTab === "react" ? "tsx" : activeTab}</span><CopyButton text={activeExample.code} label="Copy code" /></div><pre className="code-content"><code>{highlightCode(activeExample.code, activeTab)}</code></pre></div>
+            </div>
+          </section>
+
+          <section className="section collection-section" id="collection">
+            <div className="section-heading collection-heading"><div><div className="eyebrow">The collection</div><h2>{allEmojis.length} reasons to express yourself.</h2></div><span>Rendering in <b>{activeStyle.label}</b></span></div>
+            {filteredEmojis.length > 0 ? (
+              <div className="emoji-grid">{visibleEmojis.map((emoji) => <LazyEmojiCell key={emoji} emoji={emoji} size={size.px} emojiProvider={activeStyle.provider} />)}</div>
+            ) : <div className="empty-state" role="status"><span className="empty-state-title">No matching emojis</span><span className="empty-state-copy">Try a broader English name or Unicode character.</span></div>}
+            {visibleEmojis.length < filteredEmojis.length && <div className="load-more-row"><button className="load-more-button" onClick={() => setVisibleCount((count) => count + EMOJI_BATCH_SIZE)}>Load more <span>{visibleEmojis.length} / {filteredEmojis.length}</span></button></div>}
+          </section>
+
+          <section className="cta-section">
+            <div><span className="eyebrow">Ready when you are</span><h2>Give every reaction<br /><em>the right expression.</em></h2></div>
+            <div className="cta-actions"><div className="install-inline"><span className="terminal-glyph">›_</span><code className="install-code">npm i react-emoji-styles</code><CopyButton text="npm install react-emoji-styles" /></div><a href="https://github.com/JarvisBotBlanco/emoji-styles" target="_blank" rel="noopener noreferrer">View on GitHub ↗</a></div>
+            <div className="cta-emoji"><Emoji emoji="🤩" provider={publicProviders.fluent3d} size={150} /></div>
+          </section>
+        </main>
+
+        <footer className="footer"><div className="footer-left"><span className="brand-mark"><Emoji emoji="🙂" size={16} /></span><span className="footer-brand">Emoji Styles</span></div><div className="footer-links"><a href="https://github.com/JarvisBotBlanco/emoji-styles" target="_blank" rel="noopener noreferrer"><GitHubIcon /> GitHub</a><a href="https://github.com/JarvisBotBlanco/emoji-styles/blob/master/THIRD_PARTY_NOTICES.md" target="_blank" rel="noopener noreferrer">Asset licenses</a><span>MIT code</span></div><span className="footer-right">Built for expressive interfaces.</span></footer>
       </div>
     </EmojiProvider>
   );

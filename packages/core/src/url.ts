@@ -25,6 +25,7 @@ export function getFallbackChain(
   fallbacks: readonly EmojiProviderRef[] = [publicProviders.twemoji],
 ): string[] {
   if (!emojiData[emoji]) return [];
+  if (resolveProvider(primary)?.id === "native") return [];
   const refs = [primary, ...fallbacks];
   const urls: string[] = [];
   for (const ref of refs) {

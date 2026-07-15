@@ -6,10 +6,10 @@ The MIT license in `LICENSE` covers the source code created for this repository.
 
 - All workspace packages remain marked `private` until the public package boundary and third-party notices are reviewed.
 - A public build may expose only providers listed in `publicProviders`.
-- `experimentalProviders` are for internal evaluation and documentation previews only. They must not be bundled, mirrored, or advertised as licensed for production.
 - New asset sets require a source URL, exact version, license identifier, attribution text, and a record of any modifications.
-- Open assets should be fetched from their official upstream release, verified by checksum, and hosted in a versioned location controlled by the project.
+- Remote assets must resolve from an immutable upstream version. Bundled assets must also be verified by checksum.
 - Apple, Samsung, or other proprietary artwork requires written permission before public distribution.
+- Native mode renders a user's installed system emoji font and does not redistribute artwork.
 
 ## Code review checklist
 

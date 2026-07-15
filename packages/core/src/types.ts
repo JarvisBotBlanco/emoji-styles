@@ -1,14 +1,14 @@
 export type EmojiStyle =
-  | "microsoft-teams"
-  | "apple"
-  | "google"
-  | "samsung"
-  | "animated"
-  | "twemoji";
+  | "fluent-3d"
+  | "fluent-color"
+  | "fluent-flat"
+  | "noto"
+  | "twemoji"
+  | "native";
 
 export type EmojiSize = "xs" | "sm" | "md" | "lg" | "xl" | "2xl" | "3xl" | number;
 
-export type ProviderVisibility = "public" | "experimental" | "custom";
+export type ProviderVisibility = "public" | "custom";
 
 export interface ProviderLicense {
   name: string;
@@ -17,7 +17,7 @@ export interface ProviderLicense {
 }
 
 export interface EmojiData {
-  /** CDN filename (without extension) e.g. "rocket_1f680" */
+  /** Stable CLDR-derived identifier used by provider URL formatters. */
   name: string;
   /** Human-readable alt text */
   alt: string;

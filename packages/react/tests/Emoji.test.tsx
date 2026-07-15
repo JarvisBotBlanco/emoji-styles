@@ -20,6 +20,14 @@ describe("Emoji", () => {
     expect(screen.queryByRole("img")).not.toBeInTheDocument();
   });
 
+  it("renders the native provider as system Unicode instead of Twemoji", () => {
+    render(<Emoji emoji="🚀" provider={publicProviders.native} size="xl" />);
+
+    expect(screen.getByText("🚀")).toBeInTheDocument();
+    expect(screen.queryByRole("img")).not.toBeInTheDocument();
+    expect(screen.getByText("🚀").style.fontFamily).toContain("Apple Color Emoji");
+  });
+
   it("uses custom providers, accessible text, and preset dimensions", () => {
     render(
       <Emoji

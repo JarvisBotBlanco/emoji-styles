@@ -102,10 +102,33 @@ export function Emoji({ emoji, style: styleProp, provider: providerProp, size = 
     setIsLoaded(true);
   }, []);
 
+  const dimension = typeof size === "number" ? size : SIZE_MAP[size] ?? SIZE_MAP.md;
+  const isNative = provider === "native" || (typeof provider !== "string" && provider.id === "native");
+
+  if (isNative) {
+    return (
+      <span
+        className={className}
+        aria-label={alt}
+        style={{
+          width: dimension,
+          height: dimension,
+          display: "inline-flex",
+          alignItems: "center",
+          justifyContent: "center",
+          fontSize: dimension,
+          lineHeight: 1,
+          fontFamily: '"Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif',
+        }}
+      >
+        {emoji}
+      </span>
+    );
+  }
+
   if (!hasEmoji(emoji) || !initialUrl) return <span className={className}>{emoji}</span>;
   if (failed) return <span className={className}>{emoji}</span>;
 
-  const dimension = typeof size === "number" ? size : SIZE_MAP[size] ?? SIZE_MAP.md;
   const sizeStyle = { width: dimension, height: dimension };
 
   return (

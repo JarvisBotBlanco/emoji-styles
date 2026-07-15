@@ -13,10 +13,22 @@ Twemoji graphics are copyright Twitter and other contributors and are licensed u
 
 The private `emoji-styles-assets-twemoji` package contains 892 PNG files from version 15.1.0. The files are preserved byte-for-byte and accompanied by a checksum manifest.
 
-## Experimental providers
+## Microsoft Fluent Emoji
 
-The internal demo can resolve artwork displayed by Emojipedia for comparison and evaluation. Emojipedia does not license third-party vendor artwork on behalf of Apple, Google, Microsoft, Samsung, or other creators. These providers are not approved for public distribution by this project.
+Fluent Emoji artwork is copyright Microsoft Corporation and contributors and is licensed under the MIT License.
 
-- Licensing reference: https://emojipedia.org/licensing
-- Apple and Samsung artwork: no public redistribution license has been established by this project.
-- Microsoft Fluent Emoji and Google Noto Emoji are candidates for future official, locally hosted provider packages after their exact upstream assets and notices are integrated.
+- Source: https://github.com/microsoft/fluentui-emoji
+- Pinned revision: `62ecdc0d7ca5c6df32148c169556bc8d3782fca4`
+- License: https://github.com/microsoft/fluentui-emoji/blob/main/LICENSE
+- Modifications: none; the library resolves the upstream assets through jsDelivr
+
+## Noto Emoji
+
+Noto Emoji artwork is copyright Google LLC and contributors. PNG artwork is distributed under the Apache License 2.0; font files in the upstream project are separately covered by the SIL Open Font License.
+
+- Source: https://github.com/googlefonts/noto-emoji
+- Pinned revision: `8998f5dd683424a73e2314a8c1f1e359c19e8742`
+- License: https://github.com/googlefonts/noto-emoji/blob/main/LICENSE
+- Modifications: none; the library resolves the upstream PNG assets through jsDelivr
+
+The Fluent and Noto files are not bundled in this repository. Applications using their CDN providers request those assets at runtime.

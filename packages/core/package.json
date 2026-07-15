@@ -2,7 +2,7 @@
   "name": "emoji-styles",
   "private": true,
   "version": "0.1.0",
-  "description": "Multi-style emoji images from CDN — Apple, Google, Samsung, Microsoft Teams, Animated",
+  "description": "Typed multi-provider emoji URLs with licensed Fluent, Noto, Twemoji, and native renderers",
   "sideEffects": false,
   "type": "module",
   "main": "./dist/index.js",
@@ -29,6 +29,6 @@
   "repository": { "type": "git", "url": "git+https://github.com/JarvisBotBlanco/emoji-styles.git", "directory": "packages/core" },
   "bugs": { "url": "https://github.com/JarvisBotBlanco/emoji-styles/issues" },
   "homepage": "https://github.com/JarvisBotBlanco/emoji-styles#readme",
-  "keywords": ["emoji", "icons", "microsoft-teams", "apple", "google", "animated"],
+  "keywords": ["emoji", "icons", "react", "fluent-emoji", "noto-emoji", "twemoji"],
   "license": "MIT"
 }
