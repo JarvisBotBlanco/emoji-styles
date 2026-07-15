@@ -517,7 +517,7 @@ export default function App() {
           </div>
           <div className="nav-actions">
             <a
-              href="https://github.com/nicholasgriffintn/react-emoji-styles"
+              href="https://github.com/JarvisBotBlanco/emoji-styles"
               target="_blank"
               rel="noopener noreferrer"
               className="nav-link"
@@ -565,7 +565,7 @@ export default function App() {
                 <CopyButton text="npm install react-emoji-styles" label="Copy" />
               </div>
               <a
-                href="https://github.com/nicholasgriffintn/react-emoji-styles"
+                href="https://github.com/JarvisBotBlanco/emoji-styles"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="hero-btn hero-btn-secondary"
@@ -804,7 +804,7 @@ export default function App() {
                 npm
               </a>
               <a
-                href="https://github.com/nicholasgriffintn/react-emoji-styles"
+                href="https://github.com/JarvisBotBlanco/emoji-styles"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="footer-link"
