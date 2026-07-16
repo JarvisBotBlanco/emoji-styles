@@ -1,0 +1,38 @@
+{
+  "providerId": "codex-agent",
+  "version": "1.0.0",
+  "style": {
+    "description": "Clean futuristic 3D agent core with a friendly readable silhouette",
+    "perspective": "front three-quarter",
+    "lighting": "soft upper-left studio light",
+    "outline": "none",
+    "background": "transparent after chroma-key removal",
+    "detailLevel": "medium",
+    "materials": ["matte obsidian", "dark graphite", "brushed silver"],
+    "accentPolicy": "one luminous acid-lime four-point spark"
+  },
+  "canvas": {
+    "width": 1024,
+    "height": 1024,
+    "safeArea": 0.76
+  },
+  "output": {
+    "format": "webp",
+    "width": 256,
+    "height": 256,
+    "transparent": true
+  },
+  "tokens": [
+    {
+      "token": "agent.ready",
+      "emoji": "🤖",
+      "label": "AI agent ready",
+      "subject": "Compact agent core with one luminous creation spark"
+    }
+  ],
+  "assumptions": [
+    "The asset is an original product concept and does not imitate a proprietary emoji vendor.",
+    "The built-in image generation model identifier is not exposed to this workflow.",
+    "Final ownership and redistribution status require project-owner confirmation."
+  ]
+}

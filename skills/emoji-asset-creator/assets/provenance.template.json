@@ -1,0 +1,20 @@
+{
+  "generated": true,
+  "createdAt": "REPLACE_WITH_ISO_8601_TIMESTAMP",
+  "generator": {
+    "type": "ai-image-generation",
+    "provider": "RECORD_REAL_PROVIDER",
+    "model": "RECORD_REAL_MODEL"
+  },
+  "humanDirection": "Describe the approved art direction",
+  "referenceAssets": [],
+  "modifications": [
+    "cropped",
+    "centered",
+    "resized",
+    "converted"
+  ],
+  "source": "Describe the project workflow",
+  "ownership": "License status: user confirmation required",
+  "license": "License status: user confirmation required"
+}

@@ -191,3 +191,16 @@ Implemented on 2026-07-15 on branch `agent/asset-pipeline`:
 - Kept generation outside the pipeline. The caller must record the real generator and model when applicable, and packaging refuses to infer ownership or redistribution rights.
 
 The scoped package name returned `404 Not Found` from the npm registry when checked on 2026-07-15, but publication still requires ownership of the `@emoji-styles` scope and a final availability check.
+
+## Phase 9 implementation record — Codex skills
+
+Implemented on 2026-07-15 on branch `agent/codex-skills`:
+
+- Added two focused skills: `emoji-styles` for code integration/auditing and `emoji-asset-creator` for visual definition, generation guidance, normalization, review, provenance, and provider packaging.
+- Kept both `SKILL.md` control planes concise and moved configuration, migration, framework, accessibility, licensing, asset-specification, visual-consistency, prompt, manifest, and review standards into selectively loaded references.
+- Added deterministic Python wrappers around the first-party CLI instead of duplicating provider or image-processing logic inside the skills.
+- Added reusable config, asset-specification, mapping, and provenance templates; the generated product example remains isolated under the demo provider.
+- Added `.agents/skills` discovery symlinks so Codex can use both skills directly from this repository, while retaining `skills/` as the canonical distributable source.
+- Added validation tests for frontmatter, `agents/openai.yaml`, package size, resource structure, Python syntax, and script interfaces.
+- Both skills passed the official `skill-creator` validator and forward tests in clean temporary projects. The asset flow was exercised from inspection through normalized WebP, contact sheet, manifest, provider module, license notice, and provenance.
+- Used `emoji-asset-creator` on the product itself to create the original `agent.ready` demo artwork, register a custom fallback provider, and expose the asset through both Unicode `🤖` and a semantic token. The checked-in example retains its asset specification, hash, license warning, and generation provenance.

@@ -1,0 +1,26 @@
+{
+  "providerId": "custom-provider",
+  "version": "1.0.0",
+  "style": {
+    "description": "Describe one coherent visual system",
+    "perspective": "front three-quarter",
+    "lighting": "soft upper-left",
+    "outline": "none",
+    "background": "transparent",
+    "detailLevel": "medium",
+    "materials": [],
+    "accentPolicy": "Define one measurable accent rule"
+  },
+  "canvas": {
+    "width": 512,
+    "height": 512,
+    "safeArea": 0.76
+  },
+  "output": {
+    "format": "webp",
+    "width": 256,
+    "height": 256,
+    "transparent": true
+  },
+  "tokens": []
+}

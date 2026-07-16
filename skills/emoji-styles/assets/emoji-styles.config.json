@@ -1,0 +1,14 @@
+{
+  "schemaVersion": 1,
+  "provider": "fluent-3d",
+  "fallbacks": ["noto", "twemoji"],
+  "nativeFallback": false,
+  "source": ["src"],
+  "policy": {
+    "allowRemoteAssets": true,
+    "audit": {
+      "emoji-styles/accessibility/missing-label": "error",
+      "emoji-styles/determinism/native-critical-ui": "error"
+    }
+  }
+}

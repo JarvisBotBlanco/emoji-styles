@@ -1,0 +1,4 @@
+interface:
+  display_name: "Emoji Styles"
+  short_description: "Integrate and audit deterministic emoji UI"
+  default_prompt: "Use $emoji-styles to audit and improve emoji rendering in this project."

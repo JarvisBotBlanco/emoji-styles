@@ -13,12 +13,14 @@ import {
 import type { EmojiAssetProvider, EmojiSize } from "react-emoji-styles";
 import { localTwemojiProvider } from "emoji-styles-assets-twemoji";
 import deployIconUrl from "./assets/deploy.svg";
+import { agentReadyAssetUrl, codexAgentProvider } from "./custom-emoji/codex-agent/runtime";
 
 // ─── Constants ───
 
 const STYLES: { key: string; label: string; emoji: string; provider: EmojiAssetProvider }[] = [
   { key: "fluent-animated", label: "Fluent Animated", emoji: "▶", provider: publicProviders.fluentAnimated },
   { key: "noto-animated", label: "Noto Animated", emoji: "▶", provider: experimentalProviders.notoAnimated },
+  { key: "custom-agent", label: "Custom Agent", emoji: "✦", provider: codexAgentProvider },
   { key: "fluent-3d", label: "Fluent 3D", emoji: "◉", provider: publicProviders.fluent3d },
   { key: "fluent-color", label: "Fluent Color", emoji: "◐", provider: publicProviders.fluentColor },
   { key: "fluent-flat", label: "Fluent Flat", emoji: "◇", provider: publicProviders.fluentFlat },
@@ -46,6 +48,11 @@ const PRODUCT_THEME = defineEmojiTheme({
     emoji: "🚀",
     label: "Deploy application",
     asset: { url: deployIconUrl, format: "svg", local: true },
+  },
+  "agent.ready": {
+    emoji: "🤖",
+    label: "AI agent ready",
+    asset: { url: agentReadyAssetUrl, format: "webp", local: true },
   },
 }, {
   id: "product-language",
@@ -317,7 +324,7 @@ function CopyButton({ text, label }: { text: string; label?: string }) {
 
 function highlightCode(code: string, language: string): React.ReactNode {
   const lines = code.split("\n");
-  const tokenPattern = /(\/\/.*$|\/\*.*?\*\/|'(?:\\.|[^'\\])*'|"(?:\\.|[^"\\])*"|`(?:\\.|[^`\\])*`|<\/?[A-Za-z][^>]*>|\b(?:import|export|from|const|let|function|return|class|new|default|true|false|null|undefined|standalone|template|setup)\b|\b\d+\b|\b(?:Emoji|EmojiProvider|getEmojiUrl|providers|publicProviders|experimentalProviders)\b)/g;
+  const tokenPattern = /(\/\/.*$|\/\*.*?\*\/|'(?:\\.|[^'\\])*'|"(?:\\.|[^"\\])*"|`(?:\\.|[^`\\])*`|<\/?[A-Za-z][^>]*>|\b(?:import|export|from|const|let|function|return|class|new|default|true|false|null|undefined|standalone|template|setup)\b|\b\d+\b|\b(?:Emoji|EmojiToken|EmojiProvider|defineEmojiTheme|createMappedProvider|getEmojiUrl|providers|publicProviders|experimentalProviders)\b)/g;
 
   const renderLine = (line: string) => {
     const output: React.ReactNode[] = [];
@@ -331,7 +338,7 @@ function highlightCode(code: string, language: string): React.ReactNode {
       else if (/^['"`]/.test(token)) className = "hl-string";
       else if (token.startsWith("<")) className = "hl-tag";
       else if (/^\d+$/.test(token)) className = "hl-number";
-      else if (/^(Emoji|EmojiProvider|getEmojiUrl|providers|publicProviders|experimentalProviders)$/.test(token)) className = "hl-component";
+      else if (/^(Emoji|EmojiToken|EmojiProvider|defineEmojiTheme|createMappedProvider|getEmojiUrl|providers|publicProviders|experimentalProviders)$/.test(token)) className = "hl-component";
       output.push(<span className={className} key={`${index}-${token}`}>{token}</span>);
       cursor = index + token.length;
     }
@@ -400,21 +407,25 @@ export default function App() {
   const activeExample = FRAMEWORK_EXAMPLES.find((f) => f.id === activeTab) ?? FRAMEWORK_EXAMPLES[0];
   const providerCode = style === "twemoji-local"
     ? "localTwemojiProvider"
-    : ({
-        "fluent-3d": "publicProviders.fluent3d",
-        "fluent-animated": "publicProviders.fluentAnimated",
-        "fluent-color": "publicProviders.fluentColor",
-        "fluent-flat": "publicProviders.fluentFlat",
-        "noto-animated": "experimentalProviders.notoAnimated",
-        noto: "publicProviders.noto",
-        "twemoji-cdn": "publicProviders.twemoji",
-        native: "publicProviders.native",
-      } as Record<string, string>)[style] ?? "publicProviders.twemoji";
+    : style === "custom-agent"
+      ? "codexAgentProvider"
+      : ({
+          "fluent-3d": "publicProviders.fluent3d",
+          "fluent-animated": "publicProviders.fluentAnimated",
+          "fluent-color": "publicProviders.fluentColor",
+          "fluent-flat": "publicProviders.fluentFlat",
+          "noto-animated": "experimentalProviders.notoAnimated",
+          noto: "publicProviders.noto",
+          "twemoji-cdn": "publicProviders.twemoji",
+          native: "publicProviders.native",
+        } as Record<string, string>)[style] ?? "publicProviders.twemoji";
   const providerImport = style === "twemoji-local"
     ? `import { Emoji } from 'react-emoji-styles';\nimport { localTwemojiProvider } from 'emoji-styles-assets-twemoji';`
-    : style === "noto-animated"
-      ? `import { Emoji, experimentalProviders } from\n  'react-emoji-styles';`
-      : `import { Emoji, publicProviders } from\n  'react-emoji-styles';`;
+    : style === "custom-agent"
+      ? `import { Emoji } from 'react-emoji-styles';\nimport { codexAgentProvider } from './emoji/codex-agent';`
+      : style === "noto-animated"
+        ? `import { Emoji, experimentalProviders } from\n  'react-emoji-styles';`
+        : `import { Emoji, publicProviders } from\n  'react-emoji-styles';`;
   const playgroundCode = `${providerImport}
 
 export function Reaction() {
@@ -495,7 +506,7 @@ export function Reaction() {
               <div className="stage-toolbar">
                 <span><b>{activeStyle.label}</b> · {featuredEmoji}</span>
                 <div className="emoji-switcher">
-                  {["🚀", "🔥", "💡", "🎉"].map((emoji) => (
+                  {["🚀", "🔥", "🤖", "💡", "🎉"].map((emoji) => (
                     <button key={emoji} className={featuredEmoji === emoji ? "active" : ""} onClick={() => setFeaturedEmoji(emoji)} aria-label={`Try ${emoji}`}>{emoji}</button>
                   ))}
                 </div>
@@ -550,20 +561,20 @@ export function Reaction() {
           <section className="section agents-section" id="agents">
             <div className="agents-panel">
               <div className="agents-copy">
-                <span className="section-kicker">Semantic asset layer</span>
-                <h2>Turn emoji into your product language.</h2>
-                <p>Name the intent once, then resolve it to Unicode, licensed emoji, brand artwork, or components from your design system. Humans and agents use the same stable vocabulary while the product controls the result.</p>
+                <span className="section-kicker">Built with $emoji-asset-creator</span>
+                <h2>Turn intent into original product emoji.</h2>
+                <p>Codex defined the visual spec, generated one style anchor, removed its background, normalized it, recorded provenance, and registered it as a local provider. The result below is rendered from the same semantic API your app uses.</p>
                 <div className="agent-benefits">
                   <div><strong>01</strong><span><b>Semantic tokens</b> keep product intent separate from visual artwork.</span></div>
-                  <div><strong>02</strong><span><b>Versioned themes</b> compose brand overrides, locales, and generated assets.</span></div>
-                  <div><strong>03</strong><span><b>Unicode fallback</b> keeps every state portable and accessible.</span></div>
+                  <div><strong>02</strong><span><b>Deterministic validation</b> enforces alpha, safe area, centering, format, and hashes.</span></div>
+                  <div><strong>03</strong><span><b>Recorded provenance</b> keeps generation facts and unresolved license status explicit.</span></div>
                 </div>
               </div>
               <div className="agent-console" aria-label="Agent-generated component example">
                 <div className="agent-console-bar"><span>agent / ui-task</span><i>verified</i></div>
-                <div className="agent-prompt"><span>›</span><p>Use our deploy icon for action.deploy, with an accessible Unicode fallback.</p></div>
-                <pre><code>{highlightCode(`const product = defineEmojiTheme({\n  'action.deploy': {\n    emoji: '🚀',\n    label: 'Deploy application',\n    asset: { url: '/icons/deploy.svg', format: 'svg' },\n  },\n});\n\n<EmojiToken token="action.deploy" theme={product} />`, "tsx")}</code></pre>
-                <div className="agent-result"><span>Output</span><EmojiToken token="action.deploy" theme={PRODUCT_THEME} size={56} lazy={false} className="motion-float motion-subtle" /><strong>intent in · brand asset out</strong></div>
+                <div className="agent-prompt"><span>›</span><p>Use $emoji-asset-creator to make an original visual for agent.ready.</p></div>
+                <pre><code>{highlightCode(`const product = defineEmojiTheme({\n  'agent.ready': {\n    emoji: '🤖',\n    label: 'AI agent ready',\n    asset: { url: agentReadyUrl, format: 'webp' },\n  },\n});\n\n<EmojiToken token="agent.ready" theme={product} />`, "tsx")}</code></pre>
+                <div className="agent-result"><span>Generated + validated</span><EmojiToken token="agent.ready" theme={PRODUCT_THEME} size={64} lazy={false} className="motion-float motion-subtle" /><strong>intent in · custom asset out</strong></div>
               </div>
             </div>
           </section>
