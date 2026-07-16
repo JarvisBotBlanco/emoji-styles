@@ -1,9 +1,7 @@
 import { useState, useMemo, useCallback, useRef, useEffect } from "react";
 import {
   Emoji,
-  EmojiToken,
   EmojiProvider,
-  defineEmojiTheme,
   experimentalProviders,
   getAvailableEmojis,
   getEmojiData,
@@ -12,8 +10,10 @@ import {
 } from "react-emoji-styles";
 import type { EmojiAssetProvider, EmojiSize } from "react-emoji-styles";
 import { localTwemojiProvider } from "emoji-styles-assets-twemoji";
-import deployIconUrl from "./assets/deploy.svg";
 import { agentReadyAssetUrl, customEmojiProvider } from "./custom-emoji/custom-emoji/runtime";
+import { customGlossAssetUrl, customGlossProvider } from "./custom-emoji/custom-gloss/runtime";
+import { customSoft3dAssetUrl, customSoft3dProvider } from "./custom-emoji/custom-soft-3d/runtime";
+import { customClayAssetUrl, customClayProvider } from "./custom-emoji/custom-clay/runtime";
 
 // ─── Constants ───
 
@@ -43,23 +43,48 @@ const SIZES: SizeOption[] = [
 
 const EMOJI_BATCH_SIZE = 180;
 
-const PRODUCT_THEME = defineEmojiTheme({
-  "action.deploy": {
-    emoji: "🚀",
-    label: "Deploy application",
-    asset: { url: deployIconUrl, format: "svg", local: true },
-  },
-  "agent.ready": {
+const CUSTOM_EXAMPLES = [
+  {
+    id: "agent-core",
+    style: "Agent Core",
+    token: "agent.ready",
     emoji: "🤖",
     label: "AI agent ready",
-    asset: { url: agentReadyAssetUrl, format: "webp", local: true },
+    description: "Dark tech 3D",
+    assetUrl: agentReadyAssetUrl,
+    provider: customEmojiProvider,
   },
-}, {
-  id: "product-language",
-  version: "1.0.0",
-  defaultProvider: publicProviders.fluent3d,
-  fallbacks: [publicProviders.twemoji, publicProviders.native],
-});
+  {
+    id: "classic-gloss",
+    style: "Classic Gloss",
+    token: "reaction.love",
+    emoji: "😍",
+    label: "Love this",
+    description: "Glossy lacquer",
+    assetUrl: customGlossAssetUrl,
+    provider: customGlossProvider,
+  },
+  {
+    id: "soft-3d",
+    style: "Soft 3D",
+    token: "action.launch",
+    emoji: "🚀",
+    label: "Launch project",
+    description: "Satin geometry",
+    assetUrl: customSoft3dAssetUrl,
+    provider: customSoft3dProvider,
+  },
+  {
+    id: "clay-pop",
+    style: "Clay Pop",
+    token: "status.idea",
+    emoji: "💡",
+    label: "New idea",
+    description: "Sculpted clay",
+    assetUrl: customClayAssetUrl,
+    provider: customClayProvider,
+  },
+] as const;
 
 // ─── Framework code examples ───
 
@@ -368,6 +393,7 @@ export default function App() {
   });
   const [activeTab, setActiveTab] = useState("react");
   const [featuredEmoji, setFeaturedEmoji] = useState("🤖");
+  const [customExampleId, setCustomExampleId] = useState("agent-core");
 
   useEffect(() => {
     document.documentElement.dataset.theme = theme;
@@ -377,6 +403,7 @@ export default function App() {
 
   const allEmojis = useMemo(() => getAvailableEmojis(), []);
   const activeStyle = STYLES.find((item) => item.key === style) ?? STYLES[0];
+  const activeCustomExample = CUSTOM_EXAMPLES.find((item) => item.id === customExampleId) ?? CUSTOM_EXAMPLES[0];
 
   const filteredEmojis = useMemo(() => {
     if (!search.trim()) return allEmojis;
@@ -443,6 +470,18 @@ export function Reaction() {
     />
   );
 }`;
+  const customExampleCode = `const customEmoji = createMappedProvider({
+  id: '${activeCustomExample.id}',
+  assets: { '${activeCustomExample.emoji}': ${activeCustomExample.id.replace(/-/g, "")}Url },
+  fallback: publicProviders.fluent3d,
+});
+
+<Emoji
+  emoji="${activeCustomExample.emoji}"
+  provider={customEmoji}
+  label="${activeCustomExample.label}"
+  size="3xl"
+/>`;
 
   return (
     <EmojiProvider provider={activeStyle.provider}>
@@ -548,17 +587,35 @@ export function Reaction() {
               <i>→</i>
               <article><span>04 · Render</span><strong>Use one typed API</strong><p>Map the asset to Unicode or a semantic token, with a configurable fallback.</p></article>
             </div>
+            <div className="custom-lab-heading">
+              <div><span className="section-kicker">Custom Emoji Lab</span><h3>One pipeline. Different visual languages.</h3></div>
+              <p>Four original directions generated without copying vendor artwork. Select one to inspect the real asset and provider usage.</p>
+            </div>
+            <div className="custom-style-grid" aria-label="Generated custom emoji examples">
+              {CUSTOM_EXAMPLES.map((example) => (
+                <button
+                  key={example.id}
+                  className={customExampleId === example.id ? "active" : ""}
+                  onClick={() => setCustomExampleId(example.id)}
+                  aria-pressed={customExampleId === example.id}
+                >
+                  <span className="custom-style-visual"><img src={example.assetUrl} alt={example.label} /></span>
+                  <span className="custom-style-copy"><strong>{example.style}</strong><small>{example.emoji} · {example.description}</small></span>
+                  <i>↗</i>
+                </button>
+              ))}
+            </div>
             <div className="custom-emoji-showcase">
               <div className="custom-asset-preview">
                 <span className="custom-orbit" />
-                <EmojiToken token="agent.ready" theme={PRODUCT_THEME} size={128} lazy={false} className="motion-float motion-hero" />
-                <div><small>Generated asset</small><strong>agent.ready</strong><span>256×256 · WebP · local</span></div>
+                <Emoji emoji={activeCustomExample.emoji} provider={activeCustomExample.provider} label={activeCustomExample.label} size={128} lazy={false} className="motion-float motion-hero" />
+                <div><small>{activeCustomExample.style}</small><strong>{activeCustomExample.token}</strong><span>256×256 · WebP · local</span></div>
               </div>
               <div className="agent-console" aria-label="Custom emoji provider code example">
-                <div className="agent-console-bar"><span>custom-emoji/provider.ts</span><i>generated + validated</i></div>
-                <div className="agent-prompt"><span>›</span><p>$emoji-asset-creator Create an original emoji for <b>agent.ready</b>.</p></div>
-                <pre><code>{highlightCode(`const customEmoji = createMappedProvider({\n  id: 'my-product',\n  assets: { '🤖': agentReadyUrl },\n  fallback: publicProviders.fluent3d,\n});\n\n<Emoji\n  emoji="🤖"\n  provider={customEmoji}\n  label="AI agent ready"\n  size="3xl"\n/>`, "tsx")}</code></pre>
-                <div className="agent-result"><span>Unicode in</span><EmojiToken token="agent.ready" theme={PRODUCT_THEME} size={64} lazy={false} className="motion-float motion-subtle" /><strong>original asset out</strong></div>
+                <div className="agent-console-bar"><span>{activeCustomExample.id}/provider.ts</span><i>generated + validated</i></div>
+                <div className="agent-prompt"><span>›</span><p>$emoji-asset-creator Create <b>{activeCustomExample.token}</b> in an original {activeCustomExample.style} direction.</p></div>
+                <pre><code>{highlightCode(customExampleCode, "tsx")}</code></pre>
+                <div className="agent-result"><span>{activeCustomExample.emoji} Unicode in</span><Emoji emoji={activeCustomExample.emoji} provider={activeCustomExample.provider} label={activeCustomExample.label} size={64} lazy={false} className="motion-float motion-subtle" /><strong>{activeCustomExample.style} out</strong></div>
               </div>
             </div>
           </section>

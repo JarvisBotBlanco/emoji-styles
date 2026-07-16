@@ -34,7 +34,14 @@ The included **`$emoji-asset-creator` skill** turns a visual direction into a va
 $emoji-asset-creator Create a dark 3D robot emoji for agent.ready with one acid-lime spark.
 ```
 
-The checked-in example maps `🤖` to the generated asset and falls back to Fluent 3D for the rest of Unicode. See the [live implementation](./demo/src/custom-emoji/custom-emoji), [complete skill workflow](./skills/emoji-asset-creator/SKILL.md), and [custom asset guide](./docs/CUSTOM_ASSETS.md).
+The demo includes a **Custom Emoji Lab** with four original, independently packaged visual directions:
+
+| Agent Core | Classic Gloss | Soft 3D | Clay Pop |
+| --- | --- | --- | --- |
+| <img src="./demo/src/custom-emoji/custom-emoji/assets/1f916.webp" alt="Dark 3D agent core" width="96" /> | <img src="./demo/src/custom-emoji/custom-gloss/assets/1f60d.webp" alt="Classic glossy love reaction" width="96" /> | <img src="./demo/src/custom-emoji/custom-soft-3d/assets/1f680.webp" alt="Soft 3D launch rocket" width="96" /> | <img src="./demo/src/custom-emoji/custom-clay/assets/1f4a1.webp" alt="Clay idea bulb" width="96" /> |
+| `agent.ready` · 🤖 | `reaction.love` · 😍 | `action.launch` · 🚀 | `status.idea` · 💡 |
+
+Each example maps ordinary Unicode to a generated local asset and falls back to Fluent 3D for the rest of Unicode. The styles are original directions rather than reproductions of proprietary vendor artwork. See the [live implementation](./demo/src/custom-emoji), [complete skill workflow](./skills/emoji-asset-creator/SKILL.md), and [custom asset guide](./docs/CUSTOM_ASSETS.md).
 
 ## What is Emoji Styles?
 
