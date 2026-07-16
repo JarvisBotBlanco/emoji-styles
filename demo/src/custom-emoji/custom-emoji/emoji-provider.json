@@ -1,0 +1,27 @@
+{
+  "$schema": "https://emoji.style/schemas/emoji-provider.schema.json",
+  "id": "custom-emoji",
+  "label": "Custom Emoji",
+  "version": "1.0.0",
+  "format": "webp",
+  "basePath": "./assets",
+  "generated": true,
+  "generator": {
+    "type": "ai-image-generation",
+    "model": "Model identifier not exposed by the built-in tool",
+    "createdAt": "2026-07-16T01:05:28Z"
+  },
+  "license": {
+    "name": "License status: user confirmation required",
+    "ownership": "License status: user confirmation required"
+  },
+  "source": "OpenAI Build Week Emoji Styles demo workflow",
+  "assets": {
+    "🤖": {
+      "file": "1f916.webp",
+      "sha256": "1f6adf7597a3bf4a2f766f41a875488128df9e5ac3ed8e9000424c2986de1b9a",
+      "width": 256,
+      "height": 256
+    }
+  }
+}

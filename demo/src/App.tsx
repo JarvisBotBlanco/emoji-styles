@@ -13,10 +13,12 @@ import {
 import type { EmojiAssetProvider, EmojiSize } from "react-emoji-styles";
 import { localTwemojiProvider } from "emoji-styles-assets-twemoji";
 import deployIconUrl from "./assets/deploy.svg";
+import { agentReadyAssetUrl, customEmojiProvider } from "./custom-emoji/custom-emoji/runtime";
 
 // ─── Constants ───
 
 const STYLES: { key: string; label: string; emoji: string; provider: EmojiAssetProvider }[] = [
+  { key: "custom-emoji", label: "Custom Emoji", emoji: "✦", provider: customEmojiProvider },
   { key: "fluent-animated", label: "Fluent Animated", emoji: "▶", provider: publicProviders.fluentAnimated },
   { key: "noto-animated", label: "Noto Animated", emoji: "▶", provider: experimentalProviders.notoAnimated },
   { key: "fluent-3d", label: "Fluent 3D", emoji: "◉", provider: publicProviders.fluent3d },
@@ -46,6 +48,11 @@ const PRODUCT_THEME = defineEmojiTheme({
     emoji: "🚀",
     label: "Deploy application",
     asset: { url: deployIconUrl, format: "svg", local: true },
+  },
+  "agent.ready": {
+    emoji: "🤖",
+    label: "AI agent ready",
+    asset: { url: agentReadyAssetUrl, format: "webp", local: true },
   },
 }, {
   id: "product-language",
@@ -317,7 +324,7 @@ function CopyButton({ text, label }: { text: string; label?: string }) {
 
 function highlightCode(code: string, language: string): React.ReactNode {
   const lines = code.split("\n");
-  const tokenPattern = /(\/\/.*$|\/\*.*?\*\/|'(?:\\.|[^'\\])*'|"(?:\\.|[^"\\])*"|`(?:\\.|[^`\\])*`|<\/?[A-Za-z][^>]*>|\b(?:import|export|from|const|let|function|return|class|new|default|true|false|null|undefined|standalone|template|setup)\b|\b\d+\b|\b(?:Emoji|EmojiProvider|getEmojiUrl|providers|publicProviders|experimentalProviders)\b)/g;
+  const tokenPattern = /(\/\/.*$|\/\*.*?\*\/|'(?:\\.|[^'\\])*'|"(?:\\.|[^"\\])*"|`(?:\\.|[^`\\])*`|<\/?[A-Za-z][^>]*>|\b(?:import|export|from|const|let|function|return|class|new|default|true|false|null|undefined|standalone|template|setup)\b|\b\d+\b|\b(?:Emoji|EmojiToken|EmojiProvider|defineEmojiTheme|createMappedProvider|getEmojiUrl|providers|publicProviders|experimentalProviders)\b)/g;
 
   const renderLine = (line: string) => {
     const output: React.ReactNode[] = [];
@@ -331,7 +338,7 @@ function highlightCode(code: string, language: string): React.ReactNode {
       else if (/^['"`]/.test(token)) className = "hl-string";
       else if (token.startsWith("<")) className = "hl-tag";
       else if (/^\d+$/.test(token)) className = "hl-number";
-      else if (/^(Emoji|EmojiProvider|getEmojiUrl|providers|publicProviders|experimentalProviders)$/.test(token)) className = "hl-component";
+      else if (/^(Emoji|EmojiToken|EmojiProvider|defineEmojiTheme|createMappedProvider|getEmojiUrl|providers|publicProviders|experimentalProviders)$/.test(token)) className = "hl-component";
       output.push(<span className={className} key={`${index}-${token}`}>{token}</span>);
       cursor = index + token.length;
     }
@@ -350,7 +357,7 @@ function highlightCode(code: string, language: string): React.ReactNode {
 // ─── Component ───
 
 export default function App() {
-  const [style, setStyle] = useState("fluent-animated");
+  const [style, setStyle] = useState("custom-emoji");
   const [size, setSize] = useState<SizeOption>(SIZES[4]); // xl
   const [search, setSearch] = useState("");
   const [visibleCount, setVisibleCount] = useState(EMOJI_BATCH_SIZE);
@@ -360,7 +367,7 @@ export default function App() {
     return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
   });
   const [activeTab, setActiveTab] = useState("react");
-  const [featuredEmoji, setFeaturedEmoji] = useState("🚀");
+  const [featuredEmoji, setFeaturedEmoji] = useState("🤖");
 
   useEffect(() => {
     document.documentElement.dataset.theme = theme;
@@ -397,24 +404,34 @@ export default function App() {
     setTheme((prev) => (prev === "dark" ? "light" : "dark"));
   }, []);
 
+  const showCustomEmoji = useCallback(() => {
+    setStyle("custom-emoji");
+    setFeaturedEmoji("🤖");
+    document.querySelector("#custom-emoji")?.scrollIntoView({ behavior: "smooth" });
+  }, []);
+
   const activeExample = FRAMEWORK_EXAMPLES.find((f) => f.id === activeTab) ?? FRAMEWORK_EXAMPLES[0];
   const providerCode = style === "twemoji-local"
     ? "localTwemojiProvider"
-    : ({
-        "fluent-3d": "publicProviders.fluent3d",
-        "fluent-animated": "publicProviders.fluentAnimated",
-        "fluent-color": "publicProviders.fluentColor",
-        "fluent-flat": "publicProviders.fluentFlat",
-        "noto-animated": "experimentalProviders.notoAnimated",
-        noto: "publicProviders.noto",
-        "twemoji-cdn": "publicProviders.twemoji",
-        native: "publicProviders.native",
-      } as Record<string, string>)[style] ?? "publicProviders.twemoji";
+    : style === "custom-emoji"
+      ? "customEmojiProvider"
+      : ({
+          "fluent-3d": "publicProviders.fluent3d",
+          "fluent-animated": "publicProviders.fluentAnimated",
+          "fluent-color": "publicProviders.fluentColor",
+          "fluent-flat": "publicProviders.fluentFlat",
+          "noto-animated": "experimentalProviders.notoAnimated",
+          noto: "publicProviders.noto",
+          "twemoji-cdn": "publicProviders.twemoji",
+          native: "publicProviders.native",
+        } as Record<string, string>)[style] ?? "publicProviders.twemoji";
   const providerImport = style === "twemoji-local"
     ? `import { Emoji } from 'react-emoji-styles';\nimport { localTwemojiProvider } from 'emoji-styles-assets-twemoji';`
-    : style === "noto-animated"
-      ? `import { Emoji, experimentalProviders } from\n  'react-emoji-styles';`
-      : `import { Emoji, publicProviders } from\n  'react-emoji-styles';`;
+    : style === "custom-emoji"
+      ? `import { Emoji } from 'react-emoji-styles';\nimport { customEmojiProvider } from './emoji/custom-emoji';`
+      : style === "noto-animated"
+        ? `import { Emoji, experimentalProviders } from\n  'react-emoji-styles';`
+        : `import { Emoji, publicProviders } from\n  'react-emoji-styles';`;
   const playgroundCode = `${providerImport}
 
 export function Reaction() {
@@ -436,9 +453,9 @@ export function Reaction() {
             <span>Emoji <strong>Styles</strong></span>
           </a>
           <div className="nav-center">
+            <a href="#custom-emoji">Custom Emoji</a>
             <a href="#playground">Playground</a>
             <a href="#how">How it works</a>
-            <a href="#agents">For agents</a>
             <a href="#collection">Collection</a>
           </div>
           <div className="nav-actions">
@@ -453,11 +470,12 @@ export function Reaction() {
           <header className="hero" id="top">
             <div className="hero-noise" />
             <div className="hero-copy">
-              <h1 className="hero-title">One emoji.<br /><span>Every style.</span></h1>
-              <p className="hero-subtitle">Beautiful emoji, without the vendor lock-in. A tiny, typed React API for consistent expression across every interface.</p>
+              <button className="hero-announcement" onClick={showCustomEmoji}><span>New</span> Create original emoji with Codex <b>↘</b></button>
+              <h1 className="hero-title">Your emoji.<br /><span>Your style.</span></h1>
+              <p className="hero-subtitle">Generate original product emoji, validate every asset, and render it through the same tiny, typed API as your favorite open providers.</p>
               <div className="hero-actions">
-                <button className="primary-cta" onClick={() => document.querySelector("#playground")?.scrollIntoView({ behavior: "smooth" })}>
-                  Try the playground <span>↘</span>
+                <button className="primary-cta" onClick={showCustomEmoji}>
+                  Create a custom emoji <span>↘</span>
                 </button>
                 <div className="install-inline">
                   <span className="terminal-glyph">›_</span>
@@ -495,7 +513,7 @@ export function Reaction() {
               <div className="stage-toolbar">
                 <span><b>{activeStyle.label}</b> · {featuredEmoji}</span>
                 <div className="emoji-switcher">
-                  {["🚀", "🔥", "💡", "🎉"].map((emoji) => (
+                  {["🚀", "🔥", "🤖", "💡", "🎉"].map((emoji) => (
                     <button key={emoji} className={featuredEmoji === emoji ? "active" : ""} onClick={() => setFeaturedEmoji(emoji)} aria-label={`Try ${emoji}`}>{emoji}</button>
                   ))}
                 </div>
@@ -504,10 +522,45 @@ export function Reaction() {
           </header>
 
           <section className="trust-strip" aria-label="Product qualities">
+            <span>Codex skill included</span><i />
             <span>TypeScript first</span><i />
-            <span>Tree-shakeable</span><i />
             <span>SSR ready</span><i />
             <span>Accessible fallbacks</span>
+          </section>
+
+          <section className="section custom-emoji-section" id="custom-emoji">
+            <div className="custom-emoji-intro">
+              <div>
+                <span className="section-kicker">$emoji-asset-creator · included</span>
+                <h2>Describe it.<br /><em>Ship it as emoji.</em></h2>
+              </div>
+              <div className="custom-emoji-summary">
+                <p>Give Codex a visual direction and a semantic intent. The skill guides generation, removes the background, normalizes the artwork, validates the set, records provenance, and packages a production-ready provider.</p>
+                <button className="text-cta" onClick={() => document.querySelector("#playground")?.scrollIntoView({ behavior: "smooth" })}>Try it in the playground <span>↘</span></button>
+              </div>
+            </div>
+            <div className="custom-workflow" aria-label="Custom emoji creation workflow">
+              <article><span>01 · Describe</span><strong>Define intent + style</strong><p>“Create a dark 3D robot for <code>agent.ready</code> with one acid-lime spark.”</p></article>
+              <i>→</i>
+              <article><span>02 · Generate</span><strong>Create the anchor</strong><p>Codex generates and visually reviews an original high-resolution source.</p></article>
+              <i>→</i>
+              <article><span>03 · Validate</span><strong>Normalize + record</strong><p>Alpha, safe area, centering, format, hash, license status, and provenance.</p></article>
+              <i>→</i>
+              <article><span>04 · Render</span><strong>Use one typed API</strong><p>Map the asset to Unicode or a semantic token, with a configurable fallback.</p></article>
+            </div>
+            <div className="custom-emoji-showcase">
+              <div className="custom-asset-preview">
+                <span className="custom-orbit" />
+                <EmojiToken token="agent.ready" theme={PRODUCT_THEME} size={128} lazy={false} className="motion-float motion-hero" />
+                <div><small>Generated asset</small><strong>agent.ready</strong><span>256×256 · WebP · local</span></div>
+              </div>
+              <div className="agent-console" aria-label="Custom emoji provider code example">
+                <div className="agent-console-bar"><span>custom-emoji/provider.ts</span><i>generated + validated</i></div>
+                <div className="agent-prompt"><span>›</span><p>$emoji-asset-creator Create an original emoji for <b>agent.ready</b>.</p></div>
+                <pre><code>{highlightCode(`const customEmoji = createMappedProvider({\n  id: 'my-product',\n  assets: { '🤖': agentReadyUrl },\n  fallback: publicProviders.fluent3d,\n});\n\n<Emoji\n  emoji="🤖"\n  provider={customEmoji}\n  label="AI agent ready"\n  size="3xl"\n/>`, "tsx")}</code></pre>
+                <div className="agent-result"><span>Unicode in</span><EmojiToken token="agent.ready" theme={PRODUCT_THEME} size={64} lazy={false} className="motion-float motion-subtle" /><strong>original asset out</strong></div>
+              </div>
+            </div>
           </section>
 
           <section className="section how-section" id="how">
@@ -544,27 +597,6 @@ export function Reaction() {
                 <h3>Ship everywhere</h3>
                 <p>Consistent output across screens, platforms and user devices.</p>
               </article>
-            </div>
-          </section>
-
-          <section className="section agents-section" id="agents">
-            <div className="agents-panel">
-              <div className="agents-copy">
-                <span className="section-kicker">Semantic asset layer</span>
-                <h2>Turn emoji into your product language.</h2>
-                <p>Name the intent once, then resolve it to Unicode, licensed emoji, brand artwork, or components from your design system. Humans and agents use the same stable vocabulary while the product controls the result.</p>
-                <div className="agent-benefits">
-                  <div><strong>01</strong><span><b>Semantic tokens</b> keep product intent separate from visual artwork.</span></div>
-                  <div><strong>02</strong><span><b>Versioned themes</b> compose brand overrides, locales, and generated assets.</span></div>
-                  <div><strong>03</strong><span><b>Unicode fallback</b> keeps every state portable and accessible.</span></div>
-                </div>
-              </div>
-              <div className="agent-console" aria-label="Agent-generated component example">
-                <div className="agent-console-bar"><span>agent / ui-task</span><i>verified</i></div>
-                <div className="agent-prompt"><span>›</span><p>Use our deploy icon for action.deploy, with an accessible Unicode fallback.</p></div>
-                <pre><code>{highlightCode(`const product = defineEmojiTheme({\n  'action.deploy': {\n    emoji: '🚀',\n    label: 'Deploy application',\n    asset: { url: '/icons/deploy.svg', format: 'svg' },\n  },\n});\n\n<EmojiToken token="action.deploy" theme={product} />`, "tsx")}</code></pre>
-                <div className="agent-result"><span>Output</span><EmojiToken token="action.deploy" theme={PRODUCT_THEME} size={56} lazy={false} className="motion-float motion-subtle" /><strong>intent in · brand asset out</strong></div>
-              </div>
             </div>
           </section>
 
