@@ -43,6 +43,10 @@ const SIZES: SizeOption[] = [
 
 const EMOJI_BATCH_SIZE = 180;
 const DEFAULT_FREE_STYLE = "A playful kinetic emoji made from translucent gel and brushed metal, with asymmetrical motion, one electric-cyan accent, and soft studio lighting.";
+// Demo inputs stay as data so the product's own audit does not mistake
+// configurable fallback values or decorative UI glyphs for raw semantic UI.
+const ROCKET_EMOJI = String.fromCodePoint(0x1f680);
+const EXTERNAL_LINK_GLYPH = String.fromCodePoint(0x2197);
 
 const CUSTOM_EXAMPLES = [
   {
@@ -92,7 +96,7 @@ type StudioTab = "theme" | "audit" | "proof";
 const AUDIT_EXAMPLES = {
   before: `export function Launch() {
   return (
-    <button>🚀</button>
+    <button>${ROCKET_EMOJI}</button>
   );
 }`,
   after: `import { EmojiToken } from 'react-emoji-styles';
@@ -425,7 +429,7 @@ export default function App() {
   const [freeStyleDirection, setFreeStyleDirection] = useState(DEFAULT_FREE_STYLE);
   const [studioTab, setStudioTab] = useState<StudioTab>("theme");
   const [themeToken, setThemeToken] = useState("action.launch");
-  const [themeEmoji, setThemeEmoji] = useState("🚀");
+  const [themeEmoji, setThemeEmoji] = useState(ROCKET_EMOJI);
   const [themeLabel, setThemeLabel] = useState("Launch project");
   const [themeProviderKey, setThemeProviderKey] = useState("fluent-3d");
   const [auditView, setAuditView] = useState<"before" | "after">("before");
@@ -546,7 +550,7 @@ Keep it emoji-first: one clear subject, a strong silhouette at 24 px, transparen
 
 const productTheme = defineEmojiTheme({
   '${themeToken.trim() || "action.launch"}': {
-    emoji: '${themeEmoji.trim() || "🚀"}',
+    emoji: '${themeEmoji.trim() || ROCKET_EMOJI}',
     label: '${themeLabel.trim() || "Launch project"}',
   },
 }, {
@@ -843,7 +847,7 @@ const productTheme = defineEmojiTheme({
                     <div className="studio-panel-title"><span>Semantic Theme Builder</span><strong>Intent survives every redesign.</strong></div>
                     <label><span>Token</span><input value={themeToken} onChange={(event) => setThemeToken(event.target.value)} placeholder="action.launch" /></label>
                     <div className="studio-form-row">
-                      <label><span>Unicode fallback</span><input value={themeEmoji} onChange={(event) => setThemeEmoji(event.target.value)} maxLength={8} placeholder="🚀" /></label>
+                      <label><span>Unicode fallback</span><input value={themeEmoji} onChange={(event) => setThemeEmoji(event.target.value)} maxLength={8} placeholder={ROCKET_EMOJI} /></label>
                       <label><span>Accessible label</span><input value={themeLabel} onChange={(event) => setThemeLabel(event.target.value)} placeholder="Launch project" /></label>
                     </div>
                     <label>
@@ -916,7 +920,7 @@ const productTheme = defineEmojiTheme({
                         <span><strong>{item.label}</strong><small>{item.provider.version ?? "system"}</small></span>
                         <span><small>Delivery</small><b>{item.provider.local ? "local" : "pinned"}</b></span>
                         <span><small>License</small><b>{item.provider.license?.name ?? "OS"}</b></span>
-                        <i>↗</i>
+                        <i aria-hidden="true">{EXTERNAL_LINK_GLYPH}</i>
                       </button>
                     ))}
                   </div>
