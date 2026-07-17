@@ -14,11 +14,13 @@ import { agentReadyAssetUrl, customEmojiProvider } from "./custom-emoji/custom-e
 import { customGlossAssetUrl, customGlossProvider } from "./custom-emoji/custom-gloss/runtime";
 import { customSoft3dAssetUrl, customSoft3dProvider } from "./custom-emoji/custom-soft-3d/runtime";
 import { customClayAssetUrl, customClayProvider } from "./custom-emoji/custom-clay/runtime";
+import { EmojiPicker } from "./EmojiPicker";
 
 // ─── Constants ───
 
 const STYLES: { key: string; label: string; emoji: string; provider: EmojiAssetProvider }[] = [
   { key: "custom-emoji", label: "Custom Emoji", emoji: "✦", provider: customEmojiProvider },
+  { key: "serenityos", label: "SerenityOS Pixel Art", emoji: "▦", provider: publicProviders.serenityOS },
   { key: "fluent-animated", label: "Fluent Animated", emoji: "▶", provider: publicProviders.fluentAnimated },
   { key: "noto-animated", label: "Noto Animated", emoji: "▶", provider: experimentalProviders.notoAnimated },
   { key: "fluent-3d", label: "Fluent 3D", emoji: "◉", provider: publicProviders.fluent3d },
@@ -42,6 +44,7 @@ const SIZES: SizeOption[] = [
 ];
 
 const EMOJI_BATCH_SIZE = 180;
+const SERENITYOS_COVERAGE_NOTE = "Partial catalog · exact SerenityOS matches use pixel art; unsupported sequences fall back to Twemoji/native.";
 const DEFAULT_FREE_STYLE = "A playful kinetic emoji made from translucent gel and brushed metal, with asymmetrical motion, one electric-cyan accent, and soft studio lighting.";
 
 const CUSTOM_EXAMPLES = [
@@ -454,6 +457,7 @@ export default function App() {
           "fluent-flat": "publicProviders.fluentFlat",
           "noto-animated": "experimentalProviders.notoAnimated",
           noto: "publicProviders.noto",
+          serenityos: "publicProviders.serenityOS",
           "twemoji-cdn": "publicProviders.twemoji",
           native: "publicProviders.native",
         } as Record<string, string>)[style] ?? "publicProviders.twemoji";
@@ -638,10 +642,19 @@ Keep it emoji-first: one clear subject, a strong silhouette at 24 px, transparen
                       <span>Semantic token</span>
                       <input value={freeStyleToken} onChange={(event) => setFreeStyleToken(event.target.value)} placeholder="brand.momentum" />
                     </label>
-                    <label className="free-style-emoji-field">
-                      <span>Unicode fallback</span>
-                      <input value={freeStyleEmoji} onChange={(event) => setFreeStyleEmoji(event.target.value)} placeholder="☄️" maxLength={8} />
-                    </label>
+                    <div className="free-style-field free-style-emoji-field">
+                      <label htmlFor="free-style-unicode-fallback">Unicode fallback</label>
+                      <div className="free-style-emoji-control">
+                        <input
+                          id="free-style-unicode-fallback"
+                          value={freeStyleEmoji}
+                          onChange={(event) => setFreeStyleEmoji(event.target.value)}
+                          placeholder="☄️"
+                          maxLength={8}
+                        />
+                        <EmojiPicker value={freeStyleEmoji} onSelect={setFreeStyleEmoji} />
+                      </div>
+                    </div>
                     <label className="free-style-direction-field">
                       <span>Describe any original style</span>
                       <textarea value={freeStyleDirection} onChange={(event) => setFreeStyleDirection(event.target.value)} rows={5} placeholder="Materials, shape language, palette, lighting, mood, motion…" />
@@ -778,6 +791,7 @@ Keep it emoji-first: one clear subject, a strong silhouette at 24 px, transparen
                     <div className="search-wrapper"><SearchIcon /><input className="search-input" placeholder="Search the collection…" value={search} onChange={(e) => setSearch(e.target.value)} /></div>
                     <span>{filteredEmojis.length} results</span>
                   </div>
+                  {style === "serenityos" && <p className="provider-coverage-note" role="status">{SERENITYOS_COVERAGE_NOTE}</p>}
                   <div className="featured-output">
                     <div className="output-glow" />
                     <Emoji emoji={featuredEmoji} provider={activeStyle.provider} size={Math.max(size.px * 2, 64)} className="motion-float motion-subtle" />
@@ -814,6 +828,7 @@ Keep it emoji-first: one clear subject, a strong silhouette at 24 px, transparen
 
           <section className="section collection-section" id="collection">
             <div className="section-heading collection-heading"><div><div className="eyebrow">The collection</div><h2>{allEmojis.length} reasons to express yourself.</h2></div><span>Rendering in <b>{activeStyle.label}</b></span></div>
+            {style === "serenityos" && <p className="provider-coverage-note collection-coverage-note" role="status">{SERENITYOS_COVERAGE_NOTE}</p>}
             {filteredEmojis.length > 0 ? (
               <div className="emoji-grid">{visibleEmojis.map((emoji) => <LazyEmojiCell key={emoji} emoji={emoji} size={size.px} emojiProvider={activeStyle.provider} />)}</div>
             ) : <div className="empty-state" role="status"><span className="empty-state-title">No matching emojis</span><span className="empty-state-copy">Try a broader English name or Unicode character.</span></div>}
