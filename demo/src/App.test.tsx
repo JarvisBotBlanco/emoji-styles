@@ -2,6 +2,8 @@ import { fireEvent, render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 import App from "./App";
 
+const BANANA = String.fromCodePoint(0x1f34c);
+
 describe("free-style Unicode fallback", () => {
   it("updates the editable fallback and generated prompt from the picker", () => {
     render(<App />);
@@ -13,8 +15,8 @@ describe("free-style Unicode fallback", () => {
     });
     fireEvent.click(screen.getByRole("button", { name: "Banana" }));
 
-    expect(screen.getByLabelText("Unicode fallback", { selector: "#free-style-unicode-fallback" })).toHaveValue("🍌");
-    expect(screen.getByText(/Unicode fallback: 🍌/)).toBeInTheDocument();
+    expect(screen.getByLabelText("Unicode fallback", { selector: "#free-style-unicode-fallback" })).toHaveValue(BANANA);
+    expect(screen.getByText(new RegExp(`Unicode fallback: ${BANANA}`))).toBeInTheDocument();
   });
 
   it("selects and renders the independent Chinese Dragon provider", () => {

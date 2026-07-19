@@ -2,9 +2,13 @@ import { fireEvent, render, screen, within } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 import { EmojiPicker } from "./EmojiPicker";
 
+const BANANA = String.fromCodePoint(0x1f34c);
+const UNICORN = String.fromCodePoint(0x1f984);
+const THUMBS_UP = String.fromCodePoint(0x1f44d);
+
 describe("EmojiPicker", () => {
   it("opens with a compact selection of 24 Unicode emoji", () => {
-    render(<EmojiPicker value="🍌" onSelect={vi.fn()} />);
+    render(<EmojiPicker value={BANANA} onSelect={vi.fn()} />);
 
     const trigger = screen.getByRole("button", { name: "Choose Unicode emoji" });
     fireEvent.click(trigger);
@@ -22,7 +26,7 @@ describe("EmojiPicker", () => {
     fireEvent.change(search, { target: { value: "sushi" } });
     expect(screen.getByRole("button", { name: "Sushi" })).toBeInTheDocument();
 
-    fireEvent.change(search, { target: { value: "🦄" } });
+    fireEvent.change(search, { target: { value: UNICORN } });
     expect(screen.getByRole("button", { name: "Unicorn" })).toBeInTheDocument();
 
     fireEvent.change(search, { target: { value: "1f984" } });
@@ -37,13 +41,13 @@ describe("EmojiPicker", () => {
 
     fireEvent.click(screen.getByRole("button", { name: "Banana" }));
 
-    expect(onSelect).toHaveBeenCalledWith("🍌");
+    expect(onSelect).toHaveBeenCalledWith(BANANA);
     expect(screen.queryByRole("dialog", { name: "Choose a Unicode fallback" })).not.toBeInTheDocument();
     expect(trigger).toHaveFocus();
   });
 
   it("dismisses with Escape or an outside pointer interaction", () => {
-    render(<EmojiPicker value="🍌" onSelect={vi.fn()} />);
+    render(<EmojiPicker value={BANANA} onSelect={vi.fn()} />);
     const trigger = screen.getByRole("button", { name: "Choose Unicode emoji" });
 
     fireEvent.click(trigger);
@@ -71,6 +75,6 @@ describe("EmojiPicker", () => {
     expect(options[7]).toHaveFocus();
     fireEvent.keyDown(options[7], { key: "Enter" });
 
-    expect(onSelect).toHaveBeenCalledWith("👍");
+    expect(onSelect).toHaveBeenCalledWith(THUMBS_UP);
   });
 });
