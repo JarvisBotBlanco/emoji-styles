@@ -7,12 +7,12 @@ import { fileURLToPath } from "node:url";
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const releaseDir = join(root, ".release");
 const packOnly = process.argv.includes("--pack-only");
-const packageNames = [
-  "emoji-styles-data",
-  "emoji-styles",
-  "react-emoji-styles",
-  "emoji-styles-web",
-  "emoji-styles-assets-twemoji",
+const publicPackages = [
+  { name: "emoji-styles-data", directory: "packages/data" },
+  { name: "emoji-styles", directory: "packages/core" },
+  { name: "react-emoji-styles", directory: "packages/react" },
+  { name: "emoji-styles-web", directory: "packages/web" },
+  { name: "emoji-styles-assets-twemoji", directory: "packages/assets-twemoji" },
 ];
 
 function run(command, args, options = {}) {
@@ -22,10 +22,6 @@ function run(command, args, options = {}) {
     stdio: options.capture ? "pipe" : "inherit",
     ...options,
   });
-}
-
-function packageDirectory(name) {
-  return run("pnpm", ["--filter", name, "exec", "node", "-p", "process.cwd()"], { capture: true }).trim();
 }
 
 function packedManifest(tarball) {
@@ -42,8 +38,8 @@ mkdirSync(releaseDir, { recursive: true });
 const tarballs = [];
 let releaseVersion;
 
-for (const name of packageNames) {
-  const directory = packageDirectory(name);
+for (const { name, directory: relativeDirectory } of publicPackages) {
+  const directory = join(root, relativeDirectory);
   const sourceManifest = JSON.parse(readFileSync(join(directory, "package.json"), "utf8"));
 
   assert(sourceManifest.private !== true, `${name} is still private.`);
